@@ -1,0 +1,81 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.market'
+version = '0.0.1-SNAPSHOT'
+description = 'Online market for used vehicles'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+		vendor = JvmVendorSpec.AMAZON
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += ['-parameters']
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//springdoc-openapi-starter-webmvc-ui	access at: http://localhost:8080/swagger-ui.html
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
+	//Hibernate spatial
+	implementation 'org.hibernate.orm:hibernate-spatial:7.1.4.Final'
+
+	//JTS (Geometry implementation)
+	implementation 'org.locationtech.jts:jts-core:1.19.0'
+
+	//PostgreSQL JDBC
+//	implementation 'org.postgresql:postgresql:42.7.7'
+
+	//DevTools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	//Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	//Spring Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//MySQL JDBC
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//H2 Database
+//	runtimeOnly 'com.h2database:h2'
+//	testImplementation 'com.h2database:h2'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//Token
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -42,9 +42,9 @@ public class VehicleDetailsMapper {
 
     public VehicleDetailsReadOnlyDTO updateVehicleDetails(VehicleDetails entity, VehicleDetailsUpdateDTO updateDTO) {
 
-        if (updateDTO.vehicleType() != null) entity.setVehicleType(updateDTO.vehicleType());
-        if (updateDTO.make() != null) entity.setMake(updateDTO.make());
-        if (updateDTO.model() != null) entity.setModel(updateDTO.model());
+//        if (updateDTO.vehicleType() != null) entity.setVehicleType(updateDTO.vehicleType());
+//        if (updateDTO.make() != null) entity.setMake(updateDTO.make());
+//        if (updateDTO.model() != null) entity.setModel(updateDTO.model());
         if (updateDTO.manufactureYear() != null) entity.setManufactureYear(updateDTO.manufactureYear());
         if (updateDTO.mileage() != null) entity.setMileage(updateDTO.mileage());
         if (updateDTO.color() != null) entity.setColor(updateDTO.color());

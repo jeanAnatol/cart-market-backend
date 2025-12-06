@@ -4,8 +4,16 @@ import com.market.cart.UploadProperties;
 import com.market.cart.entity.attachment.Attachment;
 
 import com.market.cart.entity.attachment.AttachmentService;
+import com.market.cart.entity.fueltype.FuelType;
+import com.market.cart.entity.fueltype.FuelTypeRepository;
+import com.market.cart.entity.make.Make;
+import com.market.cart.entity.make.MakeRepository;
+import com.market.cart.entity.model.Model;
+import com.market.cart.entity.model.ModelRepository;
 import com.market.cart.entity.user.User;
 import com.market.cart.entity.user.UserRepository;
+import com.market.cart.entity.vehicletype.VehicleType;
+import com.market.cart.entity.vehicletype.VehicleTypeRepository;
 import com.market.cart.exceptions.custom.*;
 
 import com.market.cart.filters.Paginated;
@@ -38,6 +46,10 @@ import java.util.stream.Collectors;
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+    private final FuelTypeRepository fuelTypeRepository;
+    private final VehicleTypeRepository vehicleTypeRepository;
+    private final MakeRepository makeRepository;
+    private final ModelRepository modelRepository;
     private final AdvertisementMapper advertisementMapper;
     private final AttachmentService attachmentService;
     private final AdvertisementValidator advertisementValidator;
@@ -52,9 +64,29 @@ public class AdvertisementService {
 
         try {
             /// Instantiate Advertisement
-            Advertisement advertisement = advertisementMapper.toAdvertisement(advInsDTO);
+
+
+            FuelType fuelType = fuelTypeRepository.findById(advInsDTO.engineSpecInsertDTO().fuelTypeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Fuel Type found with id: "+ advInsDTO.engineSpecInsertDTO().fuelTypeId(), "advertisementService"));
+
+            VehicleType vehicleType = vehicleTypeRepository.findById(advInsDTO.vehicleDetailsInsertDTO().vehicleTypeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Vehicle Type found with id: "+ advInsDTO.vehicleDetailsInsertDTO().vehicleTypeId(), "advertisementService"));
+
+            Model model = modelRepository.findById(advInsDTO.vehicleDetailsInsertDTO().modelId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                    "No Model found with id: "+ advInsDTO.vehicleDetailsInsertDTO().modelId(), "advertisementService"));
+
+            Make make = makeRepository.findById(advInsDTO.vehicleDetailsInsertDTO().makeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                    "No Make found with id: "+ advInsDTO.vehicleDetailsInsertDTO().makeId(), "advertisementService"));
+
+            Advertisement advertisement = advertisementMapper.toAdvertisement(advInsDTO,vehicleType, fuelType,model, make);
+
             advertisement.setUser(userRepository.findById(advInsDTO.userId())
-                    .orElseThrow(() -> new CustomTargetNotFoundException("User not found with id:" + advInsDTO.userId(), "advertisementService")));
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "User not found with id:" + advInsDTO.userId(), "advertisementService")));
 
             if (images != null && !images.isEmpty()) {
                 Set<Attachment> attachments = attachmentService.toSetAttachments(images);
@@ -84,8 +116,38 @@ public class AdvertisementService {
 
         if (!user.getAdvertisements().contains(advertisement)) {
             throw new CustomNotAuthorizedException(
-                    "User is not authorized to edit an advertisement posted by another user.", "advertisementService"
-            );
+                    "User is not authorized to edit an advertisement posted by another user.", "advertisementService");
+        }
+
+
+        if (advUpdateDTO.engineSpecUpdateDTO().fuelTypeId() != null) {
+            FuelType fuelType = fuelTypeRepository.findById(advUpdateDTO.engineSpecUpdateDTO().fuelTypeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Fuel Type found with id: " + advUpdateDTO.engineSpecUpdateDTO().fuelTypeId(), "advertisementService"));
+            advertisement.getVehicleDetails().getEngineSpec().setFuelType(fuelType.getName());
+        }
+
+        if (advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId() != null) {
+            VehicleType vehicleType = vehicleTypeRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Vehicle Type found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId(), "advertisementService"));
+            advertisement.getVehicleDetails().setVehicleType(vehicleType.getName());
+        }
+
+
+        if (advUpdateDTO.vehicleDetailsUpdateDTO().modelId() != null) {
+            Model model = modelRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().modelId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Model found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().modelId(), "advertisementService"));
+            advertisement.getVehicleDetails().setModel(model.getName());
+        }
+
+
+        if (advUpdateDTO.vehicleDetailsUpdateDTO().makeId() != null) {
+            Make make = makeRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().makeId())
+                    .orElseThrow(() -> new CustomTargetNotFoundException(
+                            "No Make found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().makeId(), "advertisementService"));
+            advertisement.getVehicleDetails().setMake(make.getName());
         }
 
         advertisementValidator.validateAttachments(newImages);
@@ -108,6 +170,8 @@ public class AdvertisementService {
                 advertisement.getAttachments().addAll(newAttachments);
             }
         }
+
+
 
         /// Update advertisement fields
         advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
@@ -138,9 +202,8 @@ public class AdvertisementService {
     public AdvertisementReadOnlyDTO getAdvertismentById(Long id){
 
         Advertisement advertisement = advertisementRepository.findById(id).orElseThrow();
-        AdvertisementReadOnlyDTO advDTO = advertisementMapper.toReadOnlyDTO(advertisement);
 
-        return  advDTO;
+        return advertisementMapper.toReadOnlyDTO(advertisement);
     }
 
     public void deleteAdvertisementByID(Long id) {

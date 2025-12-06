@@ -1,9 +1,7 @@
 package com.market.cart.entity.enginespec;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 
 public record EngineSpecInsertDTO(
 
@@ -12,7 +10,7 @@ public record EngineSpecInsertDTO(
         Integer displacement,
 
         @NotNull(message = "Fuel type is required.")
-        String fuelType,
+        Long fuelTypeId,
 
         @NotNull(message = "Gearbox type is required.")
         String gearboxType,
@@ -23,9 +21,9 @@ public record EngineSpecInsertDTO(
 ) {
 }
 
-/**
- * @NotNull and @NotBlank:
- * The first is used to validate both string and numeric values
- * where the second only for strings
- * Trying to validate an Integer with @NotBlank will give an error
- */
+
+///@NotNull and @NotBlank:
+///The first is used to validate both string and numeric values
+///where the second only for strings
+///Trying to validate an Integer with @NotBlank will give an error
+///

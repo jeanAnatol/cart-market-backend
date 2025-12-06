@@ -10,7 +10,7 @@ public record EngineSpecUpdateDTO(
         Integer displacement,
 
         @Nullable
-        String fuelType,
+        Long fuelTypeId,
 
         @Nullable
         String gearboxType,

@@ -1,19 +1,17 @@
 package com.market.cart.entity.vehicledetails;
 
-import com.market.cart.entity.enginespec.EngineSpec;
-import com.market.cart.entity.vehicletype.VehicleType;
 import jakarta.validation.constraints.*;
 
 public record VehicleDetailsInsertDTO(
 
         @NotNull(message = "Vehicle type is required")
-        String vehicleType,
+        Long vehicleTypeId,
 
         @NotNull(message = "Vehicle make is required")
-        String make,
+        Long makeId,
 
         @NotNull(message = "Vehicle model is required")
-        String model,
+        Long modelId,
 
         @Pattern(regexp = "\\d{4}", message = "Manufacture year must be 4 digits")
         String manufactureYear,

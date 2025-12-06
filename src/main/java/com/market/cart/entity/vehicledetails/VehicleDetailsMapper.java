@@ -1,17 +1,20 @@
 package com.market.cart.entity.vehicledetails;
 
 import com.market.cart.entity.enginespec.EngineSpec;
+import com.market.cart.entity.make.Make;
+import com.market.cart.entity.model.Model;
+import com.market.cart.entity.vehicletype.VehicleType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class VehicleDetailsMapper {
 
-    public VehicleDetails toVehicleDetails(VehicleDetailsInsertDTO vDetailsInsDTO, EngineSpec engineSpec) {
+    public VehicleDetails toVehicleDetails(VehicleDetailsInsertDTO vDetailsInsDTO, EngineSpec engineSpec, VehicleType vehicleType, Make make, Model model) {
 
         VehicleDetails vehicleDetails = new VehicleDetails();
-        vehicleDetails.setVehicleType(vDetailsInsDTO.vehicleType());
-        vehicleDetails.setMake(vDetailsInsDTO.make());
-        vehicleDetails.setModel(vDetailsInsDTO.model());
+        vehicleDetails.setVehicleType(vehicleType.getName());
+        vehicleDetails.setMake(make.getName());
+        vehicleDetails.setModel(model.getName());
         vehicleDetails.setEngineSpec(engineSpec);
         vehicleDetails.setManufactureYear(vDetailsInsDTO.manufactureYear());
         vehicleDetails.setMileage(vDetailsInsDTO.mileage());

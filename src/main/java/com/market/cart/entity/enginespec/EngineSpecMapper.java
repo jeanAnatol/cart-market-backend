@@ -1,17 +1,18 @@
 package com.market.cart.entity.enginespec;
 
+import com.market.cart.entity.fueltype.FuelType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EngineSpecMapper {
 
-    public EngineSpec toEngineSpec(EngineSpecInsertDTO eSpecInsDTO) {
+    public EngineSpec toEngineSpec(EngineSpecInsertDTO eSpecInsDTO, FuelType fuelType) {
 
         EngineSpec engineSpec = new EngineSpec();
 
         engineSpec.setDisplacementCC(eSpecInsDTO.displacement());
         engineSpec.setHorsePower(eSpecInsDTO.horsePower());
-        engineSpec.setFuelType(eSpecInsDTO.fuelType());
+        engineSpec.setFuelType(fuelType.getName());
         engineSpec.setGearBoxType(eSpecInsDTO.gearboxType());
 
         return engineSpec;
@@ -32,7 +33,7 @@ public class EngineSpecMapper {
     public EngineSpecReadOnlyDTO updateEngineSpec(EngineSpec entity, EngineSpecUpdateDTO updateDTO) {
 
         if (updateDTO.displacement() != null) entity.setDisplacementCC(updateDTO.displacement());
-        if (updateDTO.fuelType() != null) entity.setFuelType(updateDTO.fuelType());
+//        if (updateDTO.fuelType() != null) entity.setFuelType(updateDTO.fuelType());
         if (updateDTO.gearboxType() != null) entity.setGearBoxType(updateDTO.gearboxType());
         if (updateDTO.horsePower() != null) entity.setHorsePower(updateDTO.horsePower());
 

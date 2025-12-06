@@ -14,6 +14,9 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 public record AdvertisementUpdateDTO(
 
+        @NotNull(message = "Advertisement ID is required")
+        Long adId,
+
         @NotNull(message = "User ID is required")
         Long userId,
 
@@ -22,7 +25,7 @@ public record AdvertisementUpdateDTO(
         Double price,
 
         @DefaultValue(value = "true")
-        boolean keepOldAttachments,
+        String keepOldAttachments,
 
         @Nullable
         @Valid

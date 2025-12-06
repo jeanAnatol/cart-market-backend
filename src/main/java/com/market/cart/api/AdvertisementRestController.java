@@ -69,12 +69,12 @@ public class AdvertisementRestController {
     }
 
     @Operation(summary = "Update Advertisement")
-    @PostMapping(path = "/update/{adId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
             @RequestPart("data") AdvertisementUpdateDTO advUpdateDTO,
-            @RequestPart(value = "images", required = false) Set<MultipartFile> images,
-            @PathVariable Long adId) throws ParseException {
-        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(adId, advUpdateDTO, images);
+            @RequestPart(value = "images", required = false) Set<MultipartFile> images
+            ) throws ParseException {
+        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images);
 
         return ResponseEntity.ok(readOnlyDTO);
     }

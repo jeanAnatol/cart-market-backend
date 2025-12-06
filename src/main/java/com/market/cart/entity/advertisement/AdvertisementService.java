@@ -63,9 +63,6 @@ public class AdvertisementService {
         advertisementValidator.validateAttachments(images);
 
         try {
-            /// Instantiate Advertisement
-
-
             FuelType fuelType = fuelTypeRepository.findById(advInsDTO.engineSpecInsertDTO().fuelTypeId())
                     .orElseThrow(() -> new CustomTargetNotFoundException(
                             "No Fuel Type found with id: "+ advInsDTO.engineSpecInsertDTO().fuelTypeId(), "advertisementService"));
@@ -100,18 +97,20 @@ public class AdvertisementService {
 
         } catch (DataIntegrityViolationException e) {
             throw new CustomTargetAlreadyExistsException("Duplicate advertisement or constraint violation.", "AdvertisementRepository");
+        }catch (CustomTargetNotFoundException e) {
+            throw new CustomTargetNotFoundException(e.getMessage(),e.getErrorCode());
         } catch (Exception e) {
             throw new CustomServerException("Unexpected server error while saving advertisement");
         }
     }
 
     @Transactional
-    public AdvertisementReadOnlyDTO updateAdvertisement(Long adId, AdvertisementUpdateDTO advUpdateDTO, Set<MultipartFile> newImages) throws ParseException {
+    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, Set<MultipartFile> newImages) throws ParseException {
 
         User user = userRepository.findById(advUpdateDTO.userId())
                 .orElseThrow(() -> new CustomTargetNotFoundException("User with user id: "+ advUpdateDTO.userId() + " not found", "advertisementService"));
 
-        Advertisement advertisement = advertisementRepository.findById(adId)
+        Advertisement advertisement = advertisementRepository.findById(advUpdateDTO.adId())
                 .orElseThrow(() -> new CustomTargetNotFoundException("Advertisement not found", "advertisementUpdate"));
 
         if (!user.getAdvertisements().contains(advertisement)) {
@@ -157,7 +156,7 @@ public class AdvertisementService {
 
             Set<Attachment> newAttachments = attachmentService.toSetAttachments(newImages);
 
-            if (!advUpdateDTO.keepOldAttachments()) {
+            if (advUpdateDTO.keepOldAttachments().equals("false")) {
                 /// Delete old files
                 for (Attachment attachment : advertisement.getAttachments()) {
                     attachmentService.deleteFile(attachment.getFilename());

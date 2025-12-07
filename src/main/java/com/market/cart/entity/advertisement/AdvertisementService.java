@@ -3,6 +3,7 @@ package com.market.cart.entity.advertisement;
 import com.market.cart.UploadProperties;
 import com.market.cart.entity.attachment.Attachment;
 
+import com.market.cart.entity.attachment.AttachmentRepository;
 import com.market.cart.entity.attachment.AttachmentService;
 import com.market.cart.entity.fueltype.FuelType;
 import com.market.cart.entity.fueltype.FuelTypeRepository;
@@ -38,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,7 @@ public class AdvertisementService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final MakeRepository makeRepository;
     private final ModelRepository modelRepository;
+    private final AttachmentRepository attachmentRepository;
     private final AdvertisementMapper advertisementMapper;
     private final AttachmentService attachmentService;
     private final AdvertisementValidator advertisementValidator;
@@ -104,80 +107,6 @@ public class AdvertisementService {
         }
     }
 
-//    @Transactional
-//    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, Set<MultipartFile> newImages) throws ParseException {
-//
-//        User user = userRepository.findById(advUpdateDTO.userId())
-//                .orElseThrow(() -> new CustomTargetNotFoundException("User with user id: "+ advUpdateDTO.userId() + " not found", "advertisementService"));
-//
-//        Advertisement advertisement = advertisementRepository.findById(advUpdateDTO.adId())
-//                .orElseThrow(() -> new CustomTargetNotFoundException("Advertisement not found", "advertisementUpdate"));
-//
-//        if (!user.getAdvertisements().contains(advertisement)) {
-//            throw new CustomNotAuthorizedException(
-//                    "User is not authorized to edit an advertisement posted by another user.", "advertisementService");
-//        }
-//
-//
-//        if (advUpdateDTO.engineSpecUpdateDTO().fuelTypeId() != null) {
-//            FuelType fuelType = fuelTypeRepository.findById(advUpdateDTO.engineSpecUpdateDTO().fuelTypeId())
-//                    .orElseThrow(() -> new CustomTargetNotFoundException(
-//                            "No Fuel Type found with id: " + advUpdateDTO.engineSpecUpdateDTO().fuelTypeId(), "advertisementService"));
-//            advertisement.getVehicleDetails().getEngineSpec().setFuelType(fuelType.getName());
-//        }
-//
-//        if (advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId() != null) {
-//            VehicleType vehicleType = vehicleTypeRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId())
-//                    .orElseThrow(() -> new CustomTargetNotFoundException(
-//                            "No Vehicle Type found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().vehicleTypeId(), "advertisementService"));
-//            advertisement.getVehicleDetails().setVehicleType(vehicleType.getName());
-//        }
-//
-//
-//        if (advUpdateDTO.vehicleDetailsUpdateDTO().modelId() != null) {
-//            Model model = modelRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().modelId())
-//                    .orElseThrow(() -> new CustomTargetNotFoundException(
-//                            "No Model found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().modelId(), "advertisementService"));
-//            advertisement.getVehicleDetails().setModel(model.getName());
-//        }
-//
-//
-//        if (advUpdateDTO.vehicleDetailsUpdateDTO().makeId() != null) {
-//            Make make = makeRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().makeId())
-//                    .orElseThrow(() -> new CustomTargetNotFoundException(
-//                            "No Make found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().makeId(), "advertisementService"));
-//            advertisement.getVehicleDetails().setMake(make.getName());
-//        }
-//
-//        advertisementValidator.validateAttachments(newImages);
-//
-//        /// Delete or keep old attachments if new ones are provided
-//        if (newImages != null && !newImages.isEmpty()) {
-//
-//            Set<Attachment> newAttachments = attachmentService.toSetAttachments(newImages);
-//
-//            if (advUpdateDTO.keepOldAttachments().equals("false")) {
-//                /// Delete old files
-//                for (Attachment attachment : advertisement.getAttachments()) {
-//                    attachmentService.deleteFile(attachment.getFilename());
-//                }
-//                advertisement.getAttachments().clear();
-//                advertisement.setAttachments(newAttachments);
-//
-//            } else {
-//                /// Add new Set to the existing one
-//                advertisement.getAttachments().addAll(newAttachments);
-//            }
-//        }
-//
-//
-//
-//        /// Update advertisement fields
-//        Advertisement updated = advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
-//
-//        advertisementRepository.save(updated);
-//        return advertisementMapper.toReadOnlyDTO(updated);
-//    }
     @Transactional(rollbackOn = Exception.class)
     public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, Set<MultipartFile> images) throws ParseException {
 
@@ -206,14 +135,12 @@ public class AdvertisementService {
             advertisement.getVehicleDetails().setVehicleType(vehicleType.getName());
         }
 
-
         if (advUpdateDTO.vehicleDetailsUpdateDTO().modelId() != null) {
             Model model = modelRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().modelId())
                     .orElseThrow(() -> new CustomTargetNotFoundException(
                             "No Model found with id: " + advUpdateDTO.vehicleDetailsUpdateDTO().modelId(), "advertisementService"));
             advertisement.getVehicleDetails().setModel(model.getName());
         }
-
 
         if (advUpdateDTO.vehicleDetailsUpdateDTO().makeId() != null) {
             Make make = makeRepository.findById(advUpdateDTO.vehicleDetailsUpdateDTO().makeId())
@@ -224,27 +151,31 @@ public class AdvertisementService {
 
         advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
 
-
         if (images != null && !images.isEmpty()) {
             Set<Attachment> newAttachments = attachmentService.toSetAttachments(images);
 
             if (advUpdateDTO.keepOldAttachments().equals("false")) {
                 /// Delete old files
-                for (Attachment attachment : advertisement.getAttachments()) {
-                    attachmentService.deleteFile(attachment.getFilename());
-                }
+
+                Set<String> filenames = advertisement.getAttachments()
+                        .stream()
+                        .map(Attachment::getFilename)
+                        .collect(Collectors.toSet());
+
                 advertisement.getAttachments().clear();
-                advertisement.setAttachments(newAttachments);
+
+                for (String filename : filenames) {
+                    attachmentService.deleteFile(filename);
+                }
+                advertisement.getAttachments().addAll(newAttachments);
 
             } else {
                 /// Add new Set to the existing one
                 advertisement.getAttachments().addAll(newAttachments);
             }
         }
-
         return advertisementMapper.toReadOnlyDTO(advertisementRepository.save(advertisement));
     }
-
 
     /// Returns an unmodifiable set of all Advertisements
     public Set<AdvertisementReadOnlyDTO> getAllAdvertisements() {

@@ -49,6 +49,17 @@ public class AttachmentService {
                 .collect(Collectors.toSet());
     }
 
+    public Set<String> toSetAttachmentFilenames(Set<Attachment> attachments) {
+
+        Set<String> filenames = new HashSet<>();
+
+        for (Attachment a : attachments) {
+            filenames.add(a.getFilename());
+        }
+        return filenames;
+    }
+
+
     private Attachment saveAttachment(MultipartFile file) {
         try {
             String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));

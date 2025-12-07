@@ -9,35 +9,59 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class AdvertisementSpecifications {
 
-    public static Specification<Advertisement> isOfVehicleType(Long typeId) {
+    public static Specification<Advertisement> isOfVehicleType(String vehicleType) {
+        return (root, query, cBuilder) -> {
+            if (vehicleType == null || vehicleType.isBlank()) return cBuilder.conjunction();
 
-        return (root, query, cBuilder) ->
-                typeId == null ? cBuilder.conjunction() : cBuilder.equal(
-                        root.get("vehicleDetails").get("vehicleType").get("id"), typeId);
+            return cBuilder.like(
+                    cBuilder.lower(root.get("vehicleDetails").get("vehicleType")),
+                    "%" + vehicleType.toLowerCase() + "%"
+            );
+        };
     }
 
-    public static Specification<Advertisement> isOfMake(Long makeId) {
-        return (root, query, cBuilder) ->
-                makeId == null ? cBuilder.conjunction() : cBuilder.equal(
-                        root.get("vehicleDetails").get("make").get("id"), makeId);
+    public static Specification<Advertisement> isOfMake(String make) {
+        return (root, query, cBuilder) -> {
+            if (make == null || make.isBlank()) return cBuilder.conjunction();
+
+            return cBuilder.like(
+                    cBuilder.lower(root.get("vehicleDetails").get("make")),
+                    "%" + make.toLowerCase() + "%"
+            );
+        };
     }
 
-    public static Specification<Advertisement> isOfModel(Long modelId) {
-        return (root, query, cBuilder) ->
-                modelId == null ? cBuilder.conjunction() : cBuilder.equal(
-                        root.get("vehicleDetails").get("model").get("id"), modelId);
+    public static Specification<Advertisement> isOfModel(String model) {
+        return (root, query, cBuilder) -> {
+            if (model == null || model.isBlank()) return cBuilder.conjunction();
+
+            return cBuilder.like(
+                    cBuilder.lower(root.get("vehicleDetails").get("model")),
+                    "%" + model.toLowerCase() + "%"
+            );
+        };
     }
 
     public static Specification<Advertisement> isInLocation(String locationName) {
-        return (root, query, cBuilder) ->
-                locationName == null || locationName.isBlank() ? cBuilder.conjunction() : cBuilder.like(
-                        cBuilder.lower(root.get("location").get("locationName")), "%" + locationName.toLowerCase() + "%");
+        return (root, query, cBuilder) -> {
+            if (locationName == null || locationName.isBlank()) return cBuilder.conjunction();
+
+            return cBuilder.like(
+                    cBuilder.lower(root.get("vehicleDetails").get("locationName")),
+                    "%" + locationName.toLowerCase() + "%"
+            );
+        };
     }
 
     public static Specification<Advertisement> hasPostalCode(String postalCode) {
-        return (root, query, cBuilder) ->
-                postalCode == null || postalCode.isBlank() ? cBuilder.conjunction() : cBuilder.like(
-                        root.get("location").get("postalCode"), postalCode);
+        return (root, query, cBuilder) -> {
+            if (postalCode == null || postalCode.isBlank()) return cBuilder.conjunction();
+
+            return cBuilder.like(
+                    cBuilder.lower(root.get("vehicleDetails").get("postalCode")),
+                    "%" + postalCode.toLowerCase() + "%"
+            );
+        };
 
     }
 }

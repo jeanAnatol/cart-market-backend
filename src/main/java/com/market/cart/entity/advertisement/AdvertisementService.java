@@ -233,12 +233,13 @@ public class AdvertisementService {
         advertisementRepository.delete(advertisement);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public Paginated<AdvertisementReadOnlyDTO> searchAdvertisements(
             Integer page,
             Integer size,
-            Long typeId,
-            Long makeId,
-            Long modelId,
+            String vehicleType,
+            String make,
+            String model,
             String locationName,
             String postalCode,
             String sortBy
@@ -247,12 +248,12 @@ public class AdvertisementService {
 
         Specification<Advertisement> spec = (root, query, cb) -> cb.conjunction();
 
-        if (typeId != null)
-            spec = spec.and(AdvertisementSpecifications.isOfVehicleType(typeId));
-        if (makeId != null)
-            spec = spec.and(AdvertisementSpecifications.isOfMake(makeId));
-        if (modelId != null)
-            spec = spec.and(AdvertisementSpecifications.isOfModel(modelId));
+        if (vehicleType != null)
+            spec = spec.and(AdvertisementSpecifications.isOfVehicleType(vehicleType));
+        if (make != null)
+            spec = spec.and(AdvertisementSpecifications.isOfMake(make));
+        if (model != null)
+            spec = spec.and(AdvertisementSpecifications.isOfModel(model));
         if (locationName != null)
             spec = spec.and(AdvertisementSpecifications.isInLocation(locationName));
         if (postalCode != null)

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
@@ -21,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,25 +65,6 @@ public class AdvertisementRestController {
         return ResponseEntity.ok(advertisement);
     }
 
-//    @Operation(summary = "Update Advertisement")
-//    @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
-//            @RequestPart(value = "data") AdvertisementUpdateDTO advUpdateDTO,
-//            @RequestPart(value = "images", required = false) Set<MultipartFile> images, BindingResult bindingResult
-//            ) throws ParseException {
-//
-//        if (bindingResult.hasErrors()) {
-//            throw new ValidationException(bindingResult);
-//        }
-//        Set<MultipartFile> imageSet = new HashSet<>();
-//        if (images != null) {
-//            imageSet.addAll(images);
-//        }
-//
-//        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, imageSet);
-//
-//        return ResponseEntity.ok(readOnlyDTO);
-//    }
 @Operation(summary = "Update Advertisement")
     @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
@@ -103,8 +81,6 @@ public class AdvertisementRestController {
         AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, imageSet);
         return ResponseEntity.ok(readOnlyDTO);
     }
-
-
 
     @Operation(summary = "List all Advertisements")
     @GetMapping(path = "/all")
@@ -126,9 +102,11 @@ public class AdvertisementRestController {
 
     @GetMapping(path = "/search")
     public ResponseEntity<Paginated<AdvertisementReadOnlyDTO>> search(
-            @RequestParam(required = false) Long typeId,
-            @RequestParam(required = false) Long makeId,
-            @RequestParam(required = false) Long modelId,
+
+
+            @RequestParam(required = false) String vehicleType,
+            @RequestParam(required = false) String make,
+            @RequestParam(required = false) String model,
             @RequestParam(required = false) String locationName,
             @RequestParam(required = false) String postalCode,
             @RequestParam(defaultValue = "0") int page,
@@ -136,7 +114,7 @@ public class AdvertisementRestController {
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         return ResponseEntity.ok(
-                advertisementService.searchAdvertisements(page, size, typeId, makeId, modelId, locationName, postalCode, sortBy)
+                advertisementService.searchAdvertisements(page, size, vehicleType, make, model, locationName, postalCode, sortBy)
         );
     }
 

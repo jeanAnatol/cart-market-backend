@@ -1,7 +1,6 @@
 package com.market.cart.entity.enginespec;
 
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record EngineSpecUpdateDTO(
@@ -10,7 +9,7 @@ public record EngineSpecUpdateDTO(
         Integer displacement,
 
         @Nullable
-        Long fuelTypeId,
+        Long fuelTypeId,      /// *
 
         @Nullable
         String gearboxType,

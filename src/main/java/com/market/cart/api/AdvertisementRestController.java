@@ -68,16 +68,43 @@ public class AdvertisementRestController {
         return ResponseEntity.ok(advertisement);
     }
 
-    @Operation(summary = "Update Advertisement")
+//    @Operation(summary = "Update Advertisement")
+//    @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
+//            @RequestPart(value = "data") AdvertisementUpdateDTO advUpdateDTO,
+//            @RequestPart(value = "images", required = false) Set<MultipartFile> images, BindingResult bindingResult
+//            ) throws ParseException {
+//
+//        if (bindingResult.hasErrors()) {
+//            throw new ValidationException(bindingResult);
+//        }
+//        Set<MultipartFile> imageSet = new HashSet<>();
+//        if (images != null) {
+//            imageSet.addAll(images);
+//        }
+//
+//        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, imageSet);
+//
+//        return ResponseEntity.ok(readOnlyDTO);
+//    }
+@Operation(summary = "Update Advertisement")
     @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
-            @RequestPart(value = "data") AdvertisementUpdateDTO advUpdateDTO,
-            @RequestPart(value = "images", required = false) Set<MultipartFile> images
-            ) throws ParseException {
-        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images);
+            @RequestPart("data") AdvertisementUpdateDTO advUpdateDTO,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            BindingResult bindingResult) throws ParseException {
 
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult);
+        }
+
+        Set<MultipartFile> imageSet = images != null ? new HashSet<>(images) : Collections.emptySet();
+
+        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, imageSet);
         return ResponseEntity.ok(readOnlyDTO);
     }
+
+
 
     @Operation(summary = "List all Advertisements")
     @GetMapping(path = "/all")

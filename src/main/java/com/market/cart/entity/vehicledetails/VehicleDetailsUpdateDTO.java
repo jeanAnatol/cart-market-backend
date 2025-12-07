@@ -6,13 +6,13 @@ import jakarta.validation.constraints.*;
 public record VehicleDetailsUpdateDTO(
 
         @Nullable
-        Long vehicleTypeId,
+        Long vehicleTypeId,      /// *
 
         @Nullable
-        Long makeId,
+        Long makeId,      /// *
 
         @Nullable
-        Long modelId,
+        Long modelId,      /// *
 
         @Nullable
         @Pattern(regexp = "\\d{4}", message = "Manufacture year must be 4 digits")

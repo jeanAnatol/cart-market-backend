@@ -73,7 +73,7 @@ public class LocationMapper {
         return point;
     }
 
-    public LocationReadOnlyDTO updateLocation(Location entity, LocationUpdateDTO updateDTO) throws ParseException {
+    public Location updateLocation(Location entity, LocationUpdateDTO updateDTO) throws ParseException {
 
         if (updateDTO.locationName() != null) entity.setLocationName(updateDTO.locationName());
         if (updateDTO.postalCode() != null) entity.setPostalCode(updateDTO.postalCode());
@@ -82,6 +82,6 @@ public class LocationMapper {
 
         entity.setCoordinates(mapCoordToGeometry(entity.getLongitude(), entity.getLatitude()));
 
-        return toReadOnlyDTO(entity);
+        return entity;
     }
 }

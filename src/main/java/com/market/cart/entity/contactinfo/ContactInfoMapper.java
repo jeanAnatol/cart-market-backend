@@ -28,13 +28,13 @@ public class ContactInfoMapper {
         return contactInfoReadOnlyDTO;
     }
 
-    public ContactInfoReadOnlyDTO updateContactInfo(ContactInfo entity, ContactInfoUpdateDTO updateDTO) {
+    public ContactInfo updateContactInfo(ContactInfo entity, ContactInfoUpdateDTO updateDTO) {
 
         if (updateDTO.sellerName() != null) entity.setSellerName(updateDTO.sellerName());
         if (updateDTO.email() != null) entity.setEmail(updateDTO.email());
         if (updateDTO.telephoneNumber1() != null) entity.setTelephoneNumber1(updateDTO.telephoneNumber1());
         if (updateDTO.telephoneNumber2() != null) entity. setTelephoneNumber2(updateDTO.telephoneNumber2());
 
-        return toReadOnlyDTO(entity);
+        return entity;
     }
 }

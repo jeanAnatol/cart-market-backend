@@ -2,20 +2,16 @@ package com.market.cart.entity.advertisement;
 
 import com.market.cart.entity.contactinfo.ContactInfo;
 import com.market.cart.entity.contactinfo.ContactInfoMapper;
-import com.market.cart.entity.contactinfo.ContactInfoReadOnlyDTO;
 import com.market.cart.entity.enginespec.EngineSpec;
 import com.market.cart.entity.enginespec.EngineSpecMapper;
-import com.market.cart.entity.enginespec.EngineSpecReadOnlyDTO;
 import com.market.cart.entity.fueltype.FuelType;
 import com.market.cart.entity.location.Location;
 import com.market.cart.entity.location.LocationMapper;
 
-import com.market.cart.entity.location.LocationReadOnlyDTO;
 import com.market.cart.entity.make.Make;
 import com.market.cart.entity.model.Model;
 import com.market.cart.entity.vehicledetails.VehicleDetails;
 import com.market.cart.entity.vehicledetails.VehicleDetailsMapper;
-import com.market.cart.entity.vehicledetails.VehicleDetailsReadOnlyDTO;
 import com.market.cart.entity.vehicletype.VehicleType;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
@@ -93,29 +89,34 @@ public class AdvertisementMapper {
 
         if (advUpdateDTO.price() != null && advUpdateDTO.price() > 0) advertisement.setPrice(advUpdateDTO.price());
 
-        EngineSpecReadOnlyDTO engineSpecReadOnlyDTO;
-        VehicleDetailsReadOnlyDTO vehicleDetailsReadOnlyDTO;
-        ContactInfoReadOnlyDTO contactInfoReadOnlyDTO;
-        LocationReadOnlyDTO locationReadOnlyDTO;
-
-        if (advUpdateDTO.engineSpecUpdateDTO() != null) {
-            engineSpecReadOnlyDTO = engineSpecMapper
-                    .updateEngineSpec(advertisement.getVehicleDetails().getEngineSpec(), advUpdateDTO.engineSpecUpdateDTO());
-        }
+        EngineSpec engineSpec;
+        VehicleDetails vehicleDetails;
+        ContactInfo contactInfo;
+        Location location;
 
         if (advUpdateDTO.vehicleDetailsUpdateDTO() != null) {
-            vehicleDetailsReadOnlyDTO = vehicleDetailsMapper
+            vehicleDetails = vehicleDetailsMapper
                     .updateVehicleDetails(advertisement.getVehicleDetails(), advUpdateDTO.vehicleDetailsUpdateDTO());
+            advertisement.setVehicleDetails(vehicleDetails);
+        }
+
+        if (advUpdateDTO.engineSpecUpdateDTO() != null) {
+            engineSpec = engineSpecMapper
+                    .updateEngineSpec(advertisement.getVehicleDetails().getEngineSpec(), advUpdateDTO.engineSpecUpdateDTO());
+            advertisement.getVehicleDetails().setEngineSpec(engineSpec);
+
         }
 
         if (advUpdateDTO.contactInfoUpdateDTO() != null) {
-            contactInfoReadOnlyDTO = contactInfoMapper
+            contactInfo = contactInfoMapper
                     .updateContactInfo(advertisement.getContactInfo(), advUpdateDTO.contactInfoUpdateDTO());
+            advertisement.setContactInfo(contactInfo);
         }
 
         if (advUpdateDTO.locationUpdateDTO() != null) {
-            locationReadOnlyDTO = locationMapper
+            location = locationMapper
                     .updateLocation(advertisement.getLocation(), advUpdateDTO.locationUpdateDTO());
+            advertisement.setLocation(location);
         }
 
         advertisement.setAdName(String.format("%s %s, %s",

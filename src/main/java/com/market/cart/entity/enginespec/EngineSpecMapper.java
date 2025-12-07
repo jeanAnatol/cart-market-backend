@@ -30,13 +30,13 @@ public class EngineSpecMapper {
         return engineSpecReadOnlyDTO;
     }
 
-    public EngineSpecReadOnlyDTO updateEngineSpec(EngineSpec entity, EngineSpecUpdateDTO updateDTO) {
+    public EngineSpec updateEngineSpec(EngineSpec entity, EngineSpecUpdateDTO updateDTO) {
 
         if (updateDTO.displacement() != null) entity.setDisplacementCC(updateDTO.displacement());
 //        if (updateDTO.fuelType() != null) entity.setFuelType(updateDTO.fuelType());
         if (updateDTO.gearboxType() != null) entity.setGearBoxType(updateDTO.gearboxType());
         if (updateDTO.horsePower() != null) entity.setHorsePower(updateDTO.horsePower());
 
-        return toReadOnlyDTO(entity);
+        return entity;
     }
 }

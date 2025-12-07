@@ -40,7 +40,7 @@ public class VehicleDetailsMapper {
         return vehicleDetailsReadOnlyDTO;
     }
 
-    public VehicleDetailsReadOnlyDTO updateVehicleDetails(VehicleDetails entity, VehicleDetailsUpdateDTO updateDTO) {
+    public VehicleDetails updateVehicleDetails(VehicleDetails entity, VehicleDetailsUpdateDTO updateDTO) {
 
 //        if (updateDTO.vehicleType() != null) entity.setVehicleType(updateDTO.vehicleType());
 //        if (updateDTO.make() != null) entity.setMake(updateDTO.make());
@@ -51,6 +51,6 @@ public class VehicleDetailsMapper {
         if (updateDTO.state() != null) entity.setState(updateDTO.state());
         if (updateDTO.vehicleDescriptionText() != null) entity.setVehicleDescriptionText(updateDTO.vehicleDescriptionText());
 
-        return toReadOnlyDTO(entity);
+        return entity;
     }
 }

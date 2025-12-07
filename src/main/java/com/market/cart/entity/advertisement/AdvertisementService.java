@@ -173,10 +173,10 @@ public class AdvertisementService {
 
 
         /// Update advertisement fields
-        advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
+        Advertisement updated = advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
 
-        advertisementRepository.save(advertisement);
-        return advertisementMapper.toReadOnlyDTO(advertisement);
+        advertisementRepository.save(updated);
+        return advertisementMapper.toReadOnlyDTO(updated);
     }
 
     /// Returns an unmodifiable set of all Advertisements

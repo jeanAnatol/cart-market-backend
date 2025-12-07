@@ -88,7 +88,7 @@ public class AdvertisementMapper {
         );
     }
 
-    public AdvertisementReadOnlyDTO updateAdvertisement(
+    public Advertisement updateAdvertisement(
             Advertisement advertisement, AdvertisementUpdateDTO advUpdateDTO) throws ParseException {
 
         if (advUpdateDTO.price() != null && advUpdateDTO.price() > 0) advertisement.setPrice(advUpdateDTO.price());
@@ -124,6 +124,6 @@ public class AdvertisementMapper {
                 advertisement.getVehicleDetails().getManufactureYear()));
 
 
-        return toReadOnlyDTO(advertisement);
+        return advertisement;
     }
 }

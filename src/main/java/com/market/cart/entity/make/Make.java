@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "maker")
+@Table(name = "makers")
 public class Make {
 
     @Id

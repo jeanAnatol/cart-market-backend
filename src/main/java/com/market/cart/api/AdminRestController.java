@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+//@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("/admin")
 
@@ -109,7 +109,7 @@ public class AdminRestController {
     ///    MAKE ENDPOINTS
     ///    ==============
 
-    /// Create new Make   -   VehicleTypeID must be privided
+    /// Create new Make   -   VehicleTypeID must be provided
     @Operation(summary = "Create a new Make")               /// ΔΟΥΛΕΥΕΙ TODO: ftiaxe to readOnlyDTO na fernei markes
     @PostMapping("/makes/create")
     public ResponseEntity<MakeReadOnlyDTO> createMake(
@@ -206,7 +206,7 @@ public class AdminRestController {
     }
 
     @Operation(summary = "Change fuel type name")
-    @PostMapping("/fuel-types/{typeId}/update/{name}")
+    @PostMapping("/fuel-types/{typeId}/update/{name}")                                      /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<FuelTypeReadOnlyDTO> updateFuelTypeName(
             @PathVariable Long typeId,
             @PathVariable String name
@@ -215,7 +215,7 @@ public class AdminRestController {
     }
 
     @Operation(summary = "Delete fuel type")
-    @DeleteMapping("/fuel-types/delete/{typeId}")
+    @DeleteMapping("/fuel-types/delete/{typeId}")                                           /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<?> updateFuelTypeName(
             @PathVariable Long typeId
             ) {
@@ -233,7 +233,7 @@ public class AdminRestController {
 
     /// Insert new Role
     @Operation(summary = "Create new role")
-    @PostMapping("/roles/new")
+    @PostMapping("/roles/new")                                                              /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<RoleReadOnlyDTO> addRole(
             @Valid @RequestPart("data") RoleInsertDTO roleInsertDTO) {
         RoleReadOnlyDTO roleReadOnlyDTO = roleService.addRole(roleInsertDTO);
@@ -242,7 +242,7 @@ public class AdminRestController {
 
     /// Remove Role
     @Operation(summary = "Delete a role")
-    @PostMapping("/roles/delete/{roleId}")
+    @PostMapping("/roles/delete/{roleId}")                                                    /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<?> removeRole(@PathVariable Long roleId) {
         roleService.removeRole(roleId);
         return ResponseEntity.ok("Role removed with id: "+roleId);
@@ -250,7 +250,7 @@ public class AdminRestController {
 
     /// Insert Capability to Role
     @Operation(summary = "Insert capability to role")
-    @PostMapping("/roles/{roleId}/add-capability/{capabilityId}")
+    @PostMapping("/roles/{roleId}/add-capability/{capabilityId}")                             /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<?> addCapabilityToRole(
             @PathVariable Long roleId,
             @PathVariable Long capabilityId ) {
@@ -260,7 +260,7 @@ public class AdminRestController {
 
     /// Remove Capability from Role
     @Operation(summary = "Remove capability from role")
-    @PostMapping("/roles/{roleId}/remove-capability/{capabilityId}")
+    @PostMapping("/roles/{roleId}/remove-capability/{capabilityId}")                           /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<?> removeCapabilityFromRole(
             @PathVariable Long roleId,
             @PathVariable Long capabilityId ) {
@@ -268,19 +268,19 @@ public class AdminRestController {
         return ResponseEntity.ok("Capability removed from role successfully");
     }
 
-    /// Insert Role to User
-    @Operation(summary = "Insert role to a User")
-    @PostMapping("/users/{userId}/add-role/{roleId}")
-    public ResponseEntity<?> addRoleToUser(
-            @PathVariable Long userId,
-            @PathVariable Long roleId) {
-        userService.addRoleToUser(userId, roleId);
-        return ResponseEntity.ok("Role added to user successfully");
-    }
+//    /// Insert Role to User
+//    @Operation(summary = "Insert role to a User")
+//    @PostMapping("/users/{userId}/add-role/{roleId}")
+//    public ResponseEntity<?> addRoleToUser(
+//            @PathVariable Long userId,
+//            @PathVariable Long roleId) {
+//        userService.addRoleToUser(userId, roleId);
+//        return ResponseEntity.ok("Role added to user successfully");
+//    }
 
     /// Change Role for User
     @Operation(summary = "Change role for a User")
-    @PostMapping("/users/{userId}/change-role/{roleId}")
+    @PostMapping("/users/{userId}/change-role/{roleId}")                                                /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<?> changeRoleToUser(
             @PathVariable Long userId,
             @PathVariable Long roleId) {
@@ -288,18 +288,18 @@ public class AdminRestController {
         return ResponseEntity.ok("Role changed for user with id: "+ userId +" successfully");
     }
 
-    /// Remove Role from User
-    @Operation(summary = "Remove role from User")
-    @PostMapping("/users/{userId}/remove-role")
-    public ResponseEntity<?> changeRoleToUser(
-            @PathVariable Long userId) {
-        userService.removeRole(userId);
-        return ResponseEntity.ok("Role removed successfully for user with id: " + userId);
-    }
+//    /// Remove Role from User
+//    @Operation(summary = "Remove role from User")
+//    @PostMapping("/users/{userId}/remove-role")
+//    public ResponseEntity<?> changeRoleToUser(
+//            @PathVariable Long userId) {
+//        userService.removeRole(userId);
+//        return ResponseEntity.ok("Role removed successfully for user with id: " + userId);
+//    }
 
     /// Insert capability
     @Operation(summary = "Insert new Capability")
-    @PostMapping("/capabilities/new")
+    @PostMapping("/capabilities/new")                                             /// ΔΟΥΛΕΥΕΙ
     public ResponseEntity<CapabilityReadOnlyDTO> addCapability(
             @Valid @RequestPart("data")CapabilityInsertDTO capabilityInsertDTO) {
         CapabilityReadOnlyDTO readOnlyDTO = capabilityService.addCapability(capabilityInsertDTO);
@@ -307,7 +307,7 @@ public class AdminRestController {
     }
 
     /// Remove Capability
-    @Operation(summary = "Remove a capability")
+    @Operation(summary = "Remove a capability")                                  /// ΔΟΥΛΕΥΕΙ
     @DeleteMapping("/capabilities/delete/{capabilityId}")
     public ResponseEntity<?> removeCapability (
             @PathVariable Long capabilityId) {

@@ -48,7 +48,7 @@ public class AdvertisementValidator {
 
     public void validateAttachments(Set<MultipartFile> images) {
         if (images == null || images.isEmpty()) {
-            return; // optional images are fine
+            return;
         }
 
         for (MultipartFile image : images) {
@@ -68,7 +68,22 @@ public class AdvertisementValidator {
     }
 
     private boolean isOfImageType(MultipartFile file) {
-        String type = file.getContentType();
-                return type != null && (type.startsWith("image/"));
+
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+
+        String filename = file.getOriginalFilename();
+        if (filename == null) {
+            return false;
+        }
+
+        String lowercase = filename.toLowerCase();
+
+        return lowercase.endsWith(".jpg") ||
+                lowercase.endsWith(".jpeg") ||
+                lowercase.endsWith(".png") ||
+                lowercase.endsWith(".gif") ||
+                lowercase.endsWith(".webp");
     }
 }

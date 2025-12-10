@@ -39,7 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -108,7 +108,7 @@ public class AdvertisementService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, Set<MultipartFile> images) throws ParseException {
+    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, List<MultipartFile> images) throws ParseException {
 
         User user = userRepository.findById(advUpdateDTO.userId())
                 .orElseThrow(() -> new CustomTargetNotFoundException("User with user id: "+ advUpdateDTO.userId() + " not found", "advertisementService"));
@@ -151,8 +151,17 @@ public class AdvertisementService {
 
         advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
 
-        if (images != null && !images.isEmpty()) {
-            Set<Attachment> newAttachments = attachmentService.toSetAttachments(images);
+        List<MultipartFile> validImages = images.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .toList();
+
+        if (!validImages.isEmpty()) {
+
+            Set<MultipartFile> imageSet = new HashSet<>(validImages);
+
+            advertisementValidator.validateAttachments(imageSet);
+
+            Set<Attachment> newAttachments = attachmentService.toSetAttachments(imageSet);
 
             if (advUpdateDTO.keepOldAttachments().equals("false")) {
                 /// Delete old files

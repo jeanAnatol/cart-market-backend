@@ -76,8 +76,9 @@ public class UserService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("Role not found with id: "+roleId, "userService"));
 
-        role.addUser(user);
+
         user.addRole(role);
+        userRepository.save(user);
     }
 
     public void removeRole(Long userId) {

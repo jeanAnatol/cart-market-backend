@@ -48,7 +48,10 @@ public class RoleService {
                 .orElseThrow(() -> new CustomTargetNotFoundException("Role not found with id: "+roleId, "roleService"));
         Capability capability = capabilityRepository.findById(capabilityId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("Capability not found with id: "+capabilityId, "roleService"));
+
         role.addCapability(capability);
+        capability.getRoles().add(role);
+        roleRepository.save(role);
     }
 
     public void removeCapabilityFromRole(Long roleId, Long capabilityId) {
@@ -56,6 +59,8 @@ public class RoleService {
                 .orElseThrow(() -> new CustomTargetNotFoundException("Role not found with id: "+roleId, "roleService"));
         Capability capability = capabilityRepository.findById(capabilityId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("Capability not found with id: "+capabilityId, "roleService"));
+        capability.getRoles().remove(role);
         role.removeCapability(capability);
+        roleRepository.save(role);
     }
 }

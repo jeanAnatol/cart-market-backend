@@ -76,9 +76,9 @@ public class AdvertisementRestController {
             throw new ValidationException(bindingResult);
         }
 
-        Set<MultipartFile> imageSet = images != null ? new HashSet<>(images) : Collections.emptySet();
+//        Set<MultipartFile> imageSet = images != null ? new HashSet<>(images) : Collections.emptySet();
 
-        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, imageSet);
+        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images);
         return ResponseEntity.ok(readOnlyDTO);
     }
 

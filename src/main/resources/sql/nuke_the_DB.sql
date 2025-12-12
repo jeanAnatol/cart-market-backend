@@ -13,7 +13,6 @@ DROP TABLE IF EXISTS vehicle_types;
 DROP TABLE IF EXISTS make_vehicle_types;
 DROP TABLE IF EXISTS contact_info;
 DROP TABLE IF EXISTS location_coordinates;
-DROP TABLE IF EXISTS location_dummy;
 DROP TABLE IF EXISTS vehicle_details;
 DROP TABLE IF EXISTS engine_specifications;
 DROP TABLE IF EXISTS roles;

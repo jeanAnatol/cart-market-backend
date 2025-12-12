@@ -1,5 +1,187 @@
 USE cartappdb;
 
+-- INSERT ROLES
+INSERT INTO cartappdb.roles (id, name) VALUES
+(1, 'ADMIN'),
+(2, 'MODERATOR'),
+(3, 'USER');
+
+ALTER TABLE cartappdb.roles AUTO_INCREMENT = 4;
+
+
+-- INSERT CAPABILITIES
+INSERT INTO cartappdb.capabilities (id, description, name) VALUES
+
+(1, "The capability to create new ads and users.", "CREATE"),
+(2, "The capability to read advertisements.", "READ"),
+(3, "The capability to update fields of user or advertisement.", "UPDATE"),
+(4, "The capability to delete users or advertisements.", "DELETE");
+
+ALTER TABLE cartappdb.capabilities AUTO_INCREMENT = 5;
+
+
+-- INSERT ROLES_CAPABILITIES
+INSERT INTO cartappdb.roles_capabilities (role_id, capability_id) VALUES
+(1,1),
+(1,2),
+(1,3),
+(1,4),
+(2,1),
+(2,2),
+(2,3),
+(3,1),
+(3,2);
+
+
+-- SET SRID
+ALTER TABLE location_coordinates MODIFY coordinates POINT SRID 4326;
+
+
+-- INSERT VEHICLE_TYPES
+INSERT INTO cartappdb.vehicle_types (id, name) VALUES
+
+(1, 'Car'),
+(2, 'Pickup/Semi-Truck'),
+(3, 'Truck'),
+(4, 'Motorbike'),
+(5, 'Bicycle'),
+(6, 'SUV'),
+(7, 'Motorhome/Camper'),
+(8, 'Van'),
+(9, 'Construction Machinery'),
+(10, 'MPV');
+
+ALTER TABLE vehicle_types AUTO_INCREMENT = 11;
+
+
+-- INSERT MAKERS
+INSERT INTO cartappdb.makers (id, name) VALUES
+(1, 'APRILIA'),
+(2, 'BENELLI'),
+(3, 'KYMCO'),
+(4, 'DUCATI'),
+(5, 'HARLEY-DAVIDSON'),
+-- (21, 'HONDA'),
+(7, 'HUSQVARNA'),
+(8, 'INDIAN'),
+(9, 'KAWASAKI'),
+(10, 'KTM'),
+-- (31, 'SUZUKI'),
+(12, 'TRIUMPH'),
+(13, 'YAMAHA'),
+
+(14, 'ALFA ROMEO'),
+(15, 'AUDI'),
+(16, 'BMW'),
+(17, 'CITROEN'),
+(18, 'DACIA'),
+(19, 'FIAT'),
+(20, 'FORD'),
+(21, 'HONDA'),
+(22, 'HYUNDAI'),
+(23, 'JEEP'),
+(24, 'KIA'),
+(25, 'MERCEDES'),
+(26, 'NISSAN'),
+(27, 'OPEL'),
+(28, 'PEUGEOT'),
+(29, 'RENAULT'),
+(30, 'SKODA'),
+(31, 'SUZUKI'),
+(32, 'TESLA'),
+(33, 'TOYOTA'),
+(34, 'VOLKSWAGEN'),
+(35, 'LANCIA'),
+(36, 'CHEVROLET/DAEWOO'),
+
+(37, 'DAF'),
+(38, 'INTERNATIONAL'),
+(39, 'IVECO'),
+(40, 'MAN'),
+(41, 'MERCEDES-BENZ'),
+(42, 'RENAULT'),
+(43, 'SCANIA'),
+(44, 'VOLVO'),
+(45, 'CATERPILLAR'),
+(46, 'LIEBHERR'),
+(47, 'JCB'),
+(48, 'BOBCAT');
+
+ALTER TABLE makers AUTO_INCREMENT = 49;
+
+
+-- INSERT MAKE_VEHICLE_TYPES
+INSERT INTO cartappdb.make_vehicle_types (make_id, vehicle_type_id) VALUES
+(1,4),
+(2,4),
+(4,4),
+(5,4),
+(7,4),
+(8,4),
+(9,4),
+(10, 4),
+(12, 4),
+(13, 4),
+(14, 1),
+(15, 1),
+(15, 6),
+(16, 4),
+(16, 1),
+(16, 6),
+(17, 1),
+(17, 10),
+(17, 8),
+(18, 1),
+(18, 6),
+(18, 10),
+(19, 1),
+(19, 8),
+(20, 1),
+(20, 8),
+(20, 3),
+(21, 1),
+(21, 4),
+(21, 6),
+(22, 1),
+(22, 6),
+(23, 6),
+(24, 1),
+(24, 6),
+(24, 10),
+(25, 1),
+(26, 1),
+(26, 2),
+(26, 6),
+(27, 1),
+(27, 10),
+(28, 1),
+(29, 1),
+(30, 1),
+(30, 6),
+(31, 1),
+(31, 6),
+(31, 10),
+(32, 1),
+(32 ,2),
+(33, 1),
+(33, 6),
+(34, 1),
+(34, 6),
+(35, 1),
+(36, 1),
+(36, 6),
+(37, 3),
+(39, 3),
+(40, 3),
+(41, 3),
+(42, 3),
+(43, 3),
+(44, 3);
+
+
+-- INSERT MODELS
+USE cartappdb;
+
 INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 -- Aprilia
 (1, 'RS 125', 1, 4),
@@ -393,3 +575,14 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (340, 'FMX', 44, 3);
 
 ALTER TABLE models AUTO_INCREMENT = 341;
+
+
+-- INSERT FUEL_TYPES
+INSERT INTO cartappdb.fuel_types (id, name) VALUES
+(1, 'Gasoline'),
+(2, 'Diesel'),
+(3, 'LPG'),
+(4, 'Biofuel'),
+(5, 'Electric');
+
+ALTER TABLE models AUTO_INCREMENT = 6;

@@ -22,6 +22,7 @@ public class UserService {
 
     public UserReadOnlyDTO saveUser(UserInsertDTO uInsDTO) {
 
+
         if (userRepository.findByUsername(uInsDTO.username()).isPresent()) {
             throw new CustomTargetAlreadyExistsException("Username \""+uInsDTO.username()+"\" already exists", "userService");
         }
@@ -30,11 +31,19 @@ public class UserService {
         }
         User user = userMapper.toUser(uInsDTO);
         user.setPassword(passwordEncoder.encode(uInsDTO.password()));
-        Role role = roleRepository.findByName("USER")
-                        .orElseThrow(() -> new CustomTargetNotFoundException("No Role found with name: USER ", "userService"));
+
+        Role role;
+
+        /// If roleId does not exist, or it is null, the role is set to USER by default
+        if (uInsDTO.roleId() != null) {
+            role = roleRepository.findById(uInsDTO.roleId())
+                    .orElse(defaultRole());
+        }else{
+            role = defaultRole();
+        }
+
         user.setRole(role);
         role.getUsers().add(user);
-
         return userMapper.toReadOnlyDTO(userRepository.save(user));
     }
 
@@ -92,6 +101,11 @@ public class UserService {
             throw new CustomTargetNotFoundException("User not found with uuid: "+uuid, "userService");
         }
         userRepository.deleteByUuid(uuid);
+    }
+
+    public Role defaultRole() {
+        return roleRepository.findByName("USER").
+                orElseThrow(() -> new CustomTargetNotFoundException("No Role found with name: USER", "userService"));
     }
 
 }

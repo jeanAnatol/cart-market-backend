@@ -19,6 +19,10 @@ import java.util.Set;
 @Setter
 public class AdvertisementReadOnlyDTO {
 
+    private String adName;
+
+    private String uuid;
+
     private Long userId;
 
     private Double price;
@@ -32,5 +36,9 @@ public class AdvertisementReadOnlyDTO {
     private LocationReadOnlyDTO locationDTO;
 
     private Set<String> imageUrl;
+
+    private String createdAt;
+
+    private String updatedAt;
 }
 

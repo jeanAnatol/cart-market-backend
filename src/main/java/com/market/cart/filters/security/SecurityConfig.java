@@ -63,6 +63,7 @@ public class SecurityConfig {                                                   
                         ).authenticated()
                         .requestMatchers("/users/find/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERATOR")
                         .requestMatchers("/attachments/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

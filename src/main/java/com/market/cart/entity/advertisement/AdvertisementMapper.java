@@ -1,5 +1,6 @@
 package com.market.cart.entity.advertisement;
 
+import com.market.cart.entity.attachment.Attachment;
 import com.market.cart.entity.contactinfo.ContactInfo;
 import com.market.cart.entity.contactinfo.ContactInfoMapper;
 import com.market.cart.entity.enginespec.EngineSpec;
@@ -69,18 +70,26 @@ public class AdvertisementMapper {
 
     public AdvertisementReadOnlyDTO toReadOnlyDTO(Advertisement advertisement) {
 
+//        Set<String> imageUrls = advertisement.getAttachments().stream()
+//                .map(att -> att.getUrl()
+//                        + att.getFilename())
+//                .collect(Collectors.toSet());
+
         Set<String> imageUrls = advertisement.getAttachments().stream()
-                .map(att -> att.getUrl() + att.getFilename())
-                .collect(Collectors.toSet());
+                .map(Attachment::getUrl).collect(Collectors.toSet());
 
         return new AdvertisementReadOnlyDTO(
+                advertisement.getAdName(),
+                advertisement.getUuid(),
                 advertisement.getUser().getId(),
                 advertisement.getPrice(),
                 vehicleDetailsMapper.toReadOnlyDTO(advertisement.getVehicleDetails()),
                 engineSpecMapper.toReadOnlyDTO(advertisement.getVehicleDetails().getEngineSpec()),
                 contactInfoMapper.toReadOnlyDTO(advertisement.getContactInfo()),
                 locationMapper.toReadOnlyDTO(advertisement.getLocation()),
-                imageUrls
+                imageUrls,
+                advertisement.getCreatedAt().toString(),
+                advertisement.getUpdatedAt().toString()
         );
     }
 

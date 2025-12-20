@@ -3,6 +3,8 @@ package com.market.cart.entity.attachment;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 /**
  * Vehicle photos. Linked to Advertisement
  */
@@ -19,6 +21,9 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String uuid;
+
     private String filename;
 
     /// Accepted types: .jpg, .png
@@ -32,5 +37,12 @@ public class Attachment {
     private String url;
 
     private Long size;
+
+    @PrePersist
+    public void generateUUID() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+        }
+    }
 
 }

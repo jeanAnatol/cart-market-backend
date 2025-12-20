@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @Tag(name = "Users", description = "Create, update, delete, and manage users")
 public class UserRestController {

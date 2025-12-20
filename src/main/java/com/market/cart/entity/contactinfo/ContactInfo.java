@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -18,6 +20,9 @@ public class ContactInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String uuid;
+
     @Column(name = "contact_name")
     private String sellerName;
 
@@ -29,5 +34,12 @@ public class ContactInfo {
 
     @Column(name = "contact_phone_2")
     private String telephoneNumber2;
+
+    @PrePersist
+    public void generateUUID() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+        }
+    }
 
 }

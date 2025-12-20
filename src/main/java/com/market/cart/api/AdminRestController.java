@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 //@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/admin")
 
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Administration of Makes, Models, Vehicle Types, Roles & Capabilities")

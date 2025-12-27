@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 //@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Administration of Makes, Models, Vehicle Types, Roles & Capabilities")
@@ -75,11 +75,9 @@ public class AdminRestController {
     /// All Vehicle Types
     @Operation(summary = "Get all vehicle types")               /// ΔΟΥΛΕΥΕΙ
     @GetMapping("/vehicle-types/all")
-    public ResponseEntity<?> getAllVehicleTypes() {
+    public ResponseEntity<Set<VehicleTypeReadOnlyDTO>> getAllVehicleTypes() {
         return ResponseEntity.ok(
-                vehicleTypeService.getAll().stream()
-                        .map(vehicleTypeMapper::toReadOnlyDTO)
-                        .collect(Collectors.toList()));
+                vehicleTypeService.getAllVehicleTypes());
     }
 
     /// Delete Vehicle Type
@@ -160,8 +158,8 @@ public class AdminRestController {
     /// All models
     @Operation(summary = "Get all models")
     @GetMapping("/models/all")                      /// ΔΟΥΛΕΥΕΙ
-    public ResponseEntity<List<ModelReadOnlyDTO>> getAllModels() {
-        List<ModelReadOnlyDTO> models = modelService.getAll();
+    public ResponseEntity<Set<ModelReadOnlyDTO>> getAllModels() {
+        Set<ModelReadOnlyDTO> models = modelService.getAllModels();
         return ResponseEntity.ok(models);
     }
 

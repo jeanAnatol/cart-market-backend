@@ -53,16 +53,16 @@ public class SecurityConfig {                                                   
                         .requestMatchers(
                                 "/api/advertisements/all",
                                 "/api/advertisements/search/**",
-                                "/api/advertisements/{id}",
-                                "/api/advertisements/new"
+                                "/api/advertisements/{id}"
                         ).permitAll()
-                        .requestMatchers("/users/new").permitAll()
+                        .requestMatchers("/api/users/new").permitAll()
+                        .requestMatchers("/api/reference/**").permitAll()
                         .requestMatchers(
-                                "/users/update/**",
-                                 "/users/delete/**"
+                                "/api/users/update/**",
+                                 "/api/users/delete/**"
                         ).authenticated()
-                        .requestMatchers("/users/find/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERATOR")
-                        .requestMatchers("/attachments/**").permitAll()
+                        .requestMatchers("/api/users/find/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERATOR")
+                        .requestMatchers("/api/advertisements/attachments/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()

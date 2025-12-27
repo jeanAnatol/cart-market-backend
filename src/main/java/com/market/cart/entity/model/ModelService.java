@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,9 +48,9 @@ public class ModelService {
     }
 
     @Transactional(readOnly = true)
-    public List<ModelReadOnlyDTO> getAll() {
+    public Set<ModelReadOnlyDTO> getAllModels() {
         return modelRepository.findAll()
-                .stream().map(modelMapper::toReadOnlyDTO).toList();
+                .stream().map(modelMapper::toReadOnlyDTO).collect(Collectors.toUnmodifiableSet());
     }
 
     @Transactional(readOnly = true)

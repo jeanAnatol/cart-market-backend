@@ -1,8 +1,11 @@
 package com.market.cart.entity.make;
 
 import com.market.cart.entity.model.Model;
+import com.market.cart.entity.model.ModelMapper;
+import com.market.cart.entity.model.ModelReadOnlyDTO;
 import com.market.cart.entity.model.ModelRepository;
 import com.market.cart.entity.vehicletype.VehicleType;
+import com.market.cart.entity.vehicletype.VehicleTypeReadOnlyDTO;
 import com.market.cart.entity.vehicletype.VehicleTypeRepository;
 import com.market.cart.exceptions.custom.CustomInvalidArgumentException;
 import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
@@ -24,6 +27,7 @@ public class MakeService {
     private final ModelRepository modelRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final MakeMapper makeMapper;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public MakeReadOnlyDTO createMake(MakeInsertDTO insertDTO) {
@@ -46,8 +50,9 @@ public class MakeService {
 
         makeRepository.save(make);
         vehicleTypeRepository.save(vehicleType);
+        Set<ModelReadOnlyDTO> models = getModelDTO(make);
 
-        return makeMapper.toReadOnlyDTO(make);
+        return makeMapper.toReadOnlyDTO(make, models);
     }
 
     /// Make by ID
@@ -67,8 +72,17 @@ public class MakeService {
     /// All makes
     @Transactional(readOnly = true)
     public Set<MakeReadOnlyDTO> getAllMakes() {
-        return makeRepository.findAll()
-                .stream().map(makeMapper::toReadOnlyDTO).collect(Collectors.toUnmodifiableSet());
+
+        Set<Make> allMakes = makeRepository.findAll().stream().collect(Collectors.toUnmodifiableSet());
+        Set<MakeReadOnlyDTO> makesDTO = new HashSet<>();
+
+        for (Make m : allMakes) {
+            Set<ModelReadOnlyDTO> models = getModelDTO(m);
+
+            MakeReadOnlyDTO make = makeMapper.toReadOnlyDTO(m, models);
+            makesDTO.add(make);
+        }
+        return makesDTO;
     }
 
     /// Update make
@@ -82,7 +96,10 @@ public class MakeService {
                 .orElseThrow(() -> new CustomTargetNotFoundException("Make not found with id: "+ makeId, "makeService"));
 
         make.setName(name);
-        return makeMapper.toReadOnlyDTO(makeRepository.save(make));
+        Set<ModelReadOnlyDTO> models = getModelDTO(make);
+
+
+        return makeMapper.toReadOnlyDTO(makeRepository.save(make), models);
     }
 
     /// Delete Make
@@ -183,5 +200,15 @@ public class MakeService {
         make.getModels().remove(model);
         modelRepository.delete(model);
     }
+
+    public Set<ModelReadOnlyDTO> getModelDTO(Make make) {
+
+        Set<ModelReadOnlyDTO> modelDTO = new HashSet<>();
+         for (Model m : make.getModels()) {
+             modelDTO.add(modelMapper.toReadOnlyDTO(m));
+         }
+        return modelDTO;
+    }
+
 }
 

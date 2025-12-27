@@ -11,5 +11,6 @@ import lombok.Setter;
 @Setter
 public class FuelTypeReadOnlyDTO {
 
+    private Long id;
     private String name;
 }

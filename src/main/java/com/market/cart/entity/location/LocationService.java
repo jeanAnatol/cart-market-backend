@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LocationService {
@@ -36,6 +39,11 @@ public class LocationService {
         Location location = locationRepository.findById(id)
                 .orElseThrow();
         return locationMapper.toReadOnlyDTO(location);
+    }
+
+    public Set<LocationReadOnlyDTO> getAllLocations() {
+        return locationRepository.findAll()
+                .stream().map(locationMapper::toReadOnlyDTO).collect(Collectors.toUnmodifiableSet());
     }
 
 }

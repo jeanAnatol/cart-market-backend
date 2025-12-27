@@ -1,6 +1,7 @@
 package com.market.cart.entity.make;
 
 import com.market.cart.entity.model.Model;
+import com.market.cart.entity.model.ModelReadOnlyDTO;
 import com.market.cart.entity.vehicletype.VehicleType;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +22,11 @@ public class MakeMapper {
         return make;
     }
 
-    public MakeReadOnlyDTO toReadOnlyDTO(Make make) {
-        Set<String> modelNames = make.getModels()
-                .stream()
-                .map(Model::getName)
-                .collect(Collectors.toSet());
+    public MakeReadOnlyDTO toReadOnlyDTO(Make make, Set<ModelReadOnlyDTO> models) {
+//        Set<String> modelNames = make.getModels()
+//                .stream()
+//                .map(Model::getName)
+//                .collect(Collectors.toSet());
 
         Set<String> vehicleTypeNames = make.getVehicleTypes()
                 .stream()
@@ -33,7 +34,9 @@ public class MakeMapper {
                 .collect(Collectors.toSet());
 
         return new MakeReadOnlyDTO(
-                modelNames,
+                make.getId(),
+                make.getName(),
+                models,
                 vehicleTypeNames
         );
     }

@@ -52,6 +52,6 @@ public class FuelTypeService {
 
 
     public FuelTypeReadOnlyDTO toReadIOnlyDTO (FuelType fuelType) {
-        return new FuelTypeReadOnlyDTO(fuelType.getName());
+        return new FuelTypeReadOnlyDTO(fuelType.getId(), fuelType.getName());
     }
 }

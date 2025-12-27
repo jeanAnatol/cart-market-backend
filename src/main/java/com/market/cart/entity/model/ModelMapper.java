@@ -18,6 +18,7 @@ public class ModelMapper {
 
     public ModelReadOnlyDTO toReadOnlyDTO(Model model) {
         return new ModelReadOnlyDTO(
+                model.getId(),
                 model.getName(),
                 model.getMake().getName(),
                 model.getVehicleType().getName()

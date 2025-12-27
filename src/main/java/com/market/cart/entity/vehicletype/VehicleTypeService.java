@@ -1,7 +1,8 @@
 package com.market.cart.entity.vehicletype;
 
-import com.market.cart.entity.make.Make;
-import com.market.cart.entity.make.MakeRepository;
+import com.market.cart.entity.make.*;
+import com.market.cart.entity.model.Model;
+import com.market.cart.entity.model.ModelReadOnlyDTO;
 import com.market.cart.exceptions.custom.CustomInvalidArgumentException;
 import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
 import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +21,8 @@ public class VehicleTypeService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final MakeRepository makeRepository;
     private final VehicleTypeMapper vehicleTypeMapper;
+    private final MakeMapper makeMapper;
+    private final MakeService makeService;
 
     @Transactional
     public VehicleTypeReadOnlyDTO createVehicleType(VehicleTypeInsertDTO insertDTO) {
@@ -33,7 +38,7 @@ public class VehicleTypeService {
                 vehicleTypeMapper.toVehicleType(insertDTO)
         );
 
-        return vehicleTypeMapper.toReadOnlyDTO(vehicleType);
+        return vehicleTypeMapper.toReadOnlyDTO(vehicleType, getMakeDTO(vehicleType));
     }
 
     public VehicleTypeReadOnlyDTO updateVehicleType(Long typeId, String name) {
@@ -43,12 +48,21 @@ public class VehicleTypeService {
         vehicleType.setName(name);
 
         VehicleType saved = vehicleTypeRepository.save(vehicleType);
-        return vehicleTypeMapper.toReadOnlyDTO(saved);
+        return vehicleTypeMapper.toReadOnlyDTO(saved, getMakeDTO(vehicleType));
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<VehicleType> getAll() {
-        return vehicleTypeRepository.findAll();
+    public Set<VehicleTypeReadOnlyDTO> getAllVehicleTypes() {
+
+        Set<VehicleType> allTypes = vehicleTypeRepository.findAll().stream().collect(Collectors.toUnmodifiableSet());
+        Set<VehicleTypeReadOnlyDTO> vTypesDTO = new HashSet<>();
+
+        for (VehicleType v : allTypes) {
+            Set<MakeReadOnlyDTO> makes = getMakeDTO(v);
+            VehicleTypeReadOnlyDTO vType = vehicleTypeMapper.toReadOnlyDTO(v, makes);
+            vTypesDTO.add(vType);
+        }
+        return vTypesDTO;
     }
 
     @Transactional
@@ -64,5 +78,14 @@ public class VehicleTypeService {
             }
         }
         vehicleTypeRepository.delete(vehicleType);
+    }
+
+    public Set<MakeReadOnlyDTO> getMakeDTO(VehicleType vehicleType) {
+
+        Set<MakeReadOnlyDTO> makeDTO = new HashSet<>();
+        for (Make m : vehicleType.getMakes()) {
+            makeDTO.add(makeMapper.toReadOnlyDTO(m, makeService.getModelDTO(m)));
+        }
+        return makeDTO;
     }
 }

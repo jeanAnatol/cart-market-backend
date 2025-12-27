@@ -61,15 +61,14 @@ INSERT INTO cartappdb.makers (id, name) VALUES
 (3, 'KYMCO'),
 (4, 'DUCATI'),
 (5, 'HARLEY-DAVIDSON'),
--- (21, 'HONDA'),
+
 (7, 'HUSQVARNA'),
 (8, 'INDIAN'),
 (9, 'KAWASAKI'),
 (10, 'KTM'),
--- (31, 'SUZUKI'),
+
 (12, 'TRIUMPH'),
 (13, 'YAMAHA'),
-
 (14, 'ALFA ROMEO'),
 (15, 'AUDI'),
 (16, 'BMW'),
@@ -99,7 +98,7 @@ INSERT INTO cartappdb.makers (id, name) VALUES
 (39, 'IVECO'),
 (40, 'MAN'),
 (41, 'MERCEDES-BENZ'),
-(42, 'RENAULT'),
+
 (43, 'SCANIA'),
 (44, 'VOLVO'),
 (45, 'CATERPILLAR'),
@@ -174,16 +173,14 @@ INSERT INTO cartappdb.make_vehicle_types (make_id, vehicle_type_id) VALUES
 (39, 3),
 (40, 3),
 (41, 3),
-(42, 3),
+(29, 3),
 (43, 3),
 (44, 3);
 
 
 -- INSERT MODELS
-USE cartappdb;
-
 INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
--- Aprilia
+
 (1, 'RS 125', 1, 4),
 (2, 'RS 250', 1, 4),
 (3, 'SR 50', 1, 4),
@@ -192,7 +189,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (6, 'Dorsoduro', 1, 4),
 (7, 'Pegaso', 1, 4),
 (8, 'Scarabeo', 1, 4),
--- Benelli
+
 (9, 'TNT', 2, 4),
 (10, 'Tornado Tre 900', 2, 4),
 (11, 'BN 302', 2, 4),
@@ -201,7 +198,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (14, 'BN 600', 2, 4),
 (15, '402S', 2, 4),
 (16, 'Tre-K', 2, 4),
--- BMW
+
 (17, 'R 1200 GS', 16, 4),
 (18, 'R 1000 RR', 16, 4),
 (19, 'F 800 GS', 16, 4),
@@ -210,7 +207,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (22, 'G 650 GS', 16, 4),
 (23, 'R 1200 GS', 16, 4),
 (24, 'F 650 Funduro', 16, 4),
--- Ducati
+
 (25, 'Monster', 4, 4),
 (26, '916', 4, 4),
 (27, '999', 4, 4),
@@ -220,14 +217,14 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (31, 'Streetfighter', 4, 4),
 (32, 'Hypermotard', 4, 4),
 (33, 'Diavel', 4, 4),
--- Harley-Davidson
+
 (34, 'Sportster 883', 5, 4),
 (35, 'Road King', 5, 4),
 (36, 'Street Glide', 5, 4),
 (37, 'Fat Boy', 5, 4),
 (38, 'V-Rod', 5, 4),
 (39, 'Pan America', 5, 4),
--- Honda
+
 (40, 'CBR 1000 RR', 21, 4),
 (41, 'CBR 1000 XX', 21, 4),
 (42, 'Hornet', 21, 4),
@@ -238,14 +235,14 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (47, 'Astrea', 21, 4),
 (48, 'GLX', 21, 4),
 (49, 'CB1300', 21, 4),
--- Husqvarna
+
 (50, 'TE 410', 7, 4),
 (51, 'SM 610', 7, 4),
 (52, 'Nuda 900', 7, 4),
 (53, 'TE 310', 7, 4),
 (54, 'Vitpilen 401', 7, 4),
 (55, '701 Supermoto', 7, 4),
--- Indian
+
 (56, 'Chief', 8, 4),
 (57, 'Scout', 8, 4),
 (58, 'FTR 1200', 8, 4),
@@ -255,7 +252,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (62, 'Springfield', 8, 4),
 (63, 'Forty Six', 8, 4),
 (64, 'Vintage', 8, 4),
--- Kawasaki
+
 (65, 'Ninja ZX-6R', 9, 4),
 (66, 'Ninja ZX-9R', 9, 4),
 (67, 'Ninja ZX-10R', 9, 4),
@@ -264,7 +261,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (70, 'Vulcan', 9, 4),
 (71, 'KLX 650', 9, 4),
 (72, 'KLR 750', 9, 4),
--- KTM
+
 (73, 'Duke', 10, 4),
 (74, 'Adventure', 10, 4),
 (75, 'Super Duke', 10, 4),
@@ -273,7 +270,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (78, 'SX', 10, 4),
 (79, 'RC', 10, 4),
 (80, 'LC4', 10, 4),
--- Suzuki
+
 (81, 'GSX-R1300', 31, 4),
 (82, 'GSX-R1000', 31, 4),
 (83, 'GSX-R750', 31, 4),
@@ -282,14 +279,14 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (86, 'DR-Z', 31, 4),
 (87, 'Katana', 31, 4),
 (88, 'Bandit', 31, 4),
--- Triumph
+
 (89, 'Bonneville', 12, 4),
 (90, 'Street Twin', 12, 4),
 (91, 'Thruxton', 12, 4),
 (92, 'Street Triple', 12, 4),
 (93, 'Daytona', 12, 4),
 (94, 'Tiger', 12, 4),
--- Yamaha
+
 (95, 'YZF-R1', 13, 4),
 (96, 'YZF-R6', 13, 4),
 (97, 'FJR1300', 13, 4),
@@ -299,7 +296,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (101, 'FZR', 13, 4),
 (102, 'Fazer 600', 13, 4),
 (103, 'FZR', 13, 4),
-(104, 'TZR', 13, 4),
+(104, 'TDM', 13, 4),
 (105, 'Ténéré', 13, 4),
 (106, 'T-MAX', 13, 4),
 (107, 'V-MAX', 13, 4),
@@ -307,7 +304,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 
 
 
--- Alfa Romeo
+
 (108, '147', 14, 1),
 (109, '159', 14, 1),
 (110, 'GT', 14, 1),
@@ -317,7 +314,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (114, 'Giulietta', 14, 1),
 (115, 'Giulia', 14, 1),
 (116, 'Stelvio', 14, 1),
--- Audi
+
 (117, 'A3', 15, 1),
 (118, 'A4', 15, 1),
 (119, 'A6', 15, 1),
@@ -328,7 +325,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (124, 'Q5', 15, 6),
 (125, 'Q3', 15, 6),
 (126, 'RS6 Avant', 15, 1),
--- BMW
+
 (127, '1 Series', 16, 1),
 (128, '2 Series', 16, 1),
 (129, '3 Series', 16, 1),
@@ -342,7 +339,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (137, 'X4', 16, 6),
 (138, 'X5', 16, 6),
 (139, 'X6', 16, 6),
--- Citroen
+
 (140, 'Xanthia', 17, 1),
 (141, 'Xsara', 17, 1),
 (142, 'Saxo', 17, 1),
@@ -353,13 +350,13 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (147, 'C4', 17, 1),
 (148, 'C5', 17, 1),
 (149, 'Berlingo', 17, 8),
--- Dacia
+
 (150, 'Logan', 18, 1),
 (151, 'Duster', 18, 6),
 (152, 'Jogger', 18, 10),
 (153, 'Spring', 18, 1),
 (154, 'Bigster', 18, 6),
--- Fiat
+
 (155, 'Regatta', 19, 1),
 (156, 'Punto', 19, 1),
 (157, 'Bravo', 19, 1),
@@ -371,7 +368,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (163, 'Coupe', 19, 1),
 (164, 'Doblo', 19, 8),
 (165, 'Barchetta', 19, 1),
--- Ford
+
 (166, 'Focus', 20, 1),
 (167, 'Fiesta', 20, 1),
 (168, 'Mondeo', 20, 1),
@@ -384,7 +381,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (175, 'Galaxy', 20, 1),
 (176, 'S-Max',20, 10),
 (177, 'Transit', 20, 8),
--- Honda
+
 (178, 'Civic', 21, 1),
 (179, 'CR-V', 21, 1),
 (180, 'CR-X', 21, 1),
@@ -394,7 +391,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (184, 'HR-V', 21, 6),
 (185, 'FR-V', 21, 6),
 (186, 'Insight', 21, 1),
--- Hyundai
+
 (187, 'Accent', 22, 1),
 (188, 'Getz', 22, 1),
 (189, 'Coupe', 22, 1),
@@ -404,7 +401,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (193, 'i20', 22, 1),
 (194, 'Kona', 22, 1),
 (195, 'Ioniq', 22, 1),
--- Jeep
+
 (196, 'Wrangler', 23, 6),
 (197, 'Cherokee', 23, 6),
 (198, 'Grand Cherokee', 23, 6),
@@ -413,7 +410,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (201, 'Commander', 23, 6),
 (202, 'Patriot', 23, 6),
 (203, 'Gladiator', 23, 6),
--- Kia
+
 (204, 'Sportage', 24, 6),
 (205, 'Rio', 24, 1),
 (206, 'Sorento', 24, 1),
@@ -421,7 +418,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (208, 'Ceed', 24, 1),
 (209, 'Carnival', 24, 10),
 (210, 'EV6', 24, 1),
--- Mercedes
+
 (211, 'A-Class', 25, 1),
 (212, 'C-Class', 25, 1),
 (213, 'E-Class', 25, 1),
@@ -430,7 +427,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (216, 'M-Class', 25, 1),
 (217, 'CLK', 25, 1),
 (218, 'CLS', 25, 1),
--- Nissan
+
 (219, 'Qashqai', 26, 6),
 (220, 'Navara', 26, 2),
 (221, 'X-Trail', 26, 6),
@@ -442,7 +439,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (227, 'Note', 26, 1),
 (228, 'GT-R', 26, 1),
 (229, 'Leaf', 26, 1),
--- Opel
+
 (230, 'Astra', 27, 1),
 (231, 'Vectra', 27, 1),
 (232, 'Corsa', 27, 1),
@@ -451,7 +448,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (235, 'Insignia', 27, 1),
 (236, 'Mokka', 27, 1),
 (237, 'Agila', 27, 10),
--- Peugeot
+
 (238, '106', 28, 1),
 (239, '206', 28, 1),
 (240, '306', 28, 1),
@@ -459,7 +456,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (242, '407', 28, 1),
 (243, '406', 28, 1),
 (244, '508', 28, 1),
--- Renault
+
 (245, 'Clio', 29, 1),
 (246, 'Megane', 29, 1),
 (247, 'Scenic', 29, 1),
@@ -469,7 +466,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (251, 'Captur', 29, 1),
 (252, 'Kadjar', 29, 1),
 (253, 'Arkana', 29, 1),
--- Skoda
+
 (254, 'Octavia', 30, 1),
 (255, 'Fabia', 30, 1),
 (256, 'Superb', 30, 1),
@@ -477,7 +474,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (258, 'Yeti', 30, 6),
 (259, 'Kodiaq', 30, 6),
 (260, 'Kamiq', 30, 6),
--- Suzuki
+
 (261, 'Swift', 31, 1),
 (262, 'Vitara', 31, 6),
 (263, 'Jimny', 31, 6),
@@ -488,14 +485,14 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (268, 'Wagon R+', 31, 10),
 (269, 'Baleno', 31, 1),
 (270, 'Samurai', 31, 6),
--- Tesla
+
 (271, 'Model 3', 32, 1),
 (272, 'Model Y', 32, 1),
 (273, 'Model S', 32, 1),
 (274, 'Model X', 32, 1),
 (275, 'Roadster', 32, 1),
 (276, 'Cybertruck', 32, 2),
--- Toyota
+
 (277, 'Yaris', 33, 1),
 (278, 'Corolla', 33, 1),
 (279, 'Prius', 33, 1),
@@ -506,7 +503,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (284, 'Supra', 33, 1),
 (285, 'Hilux', 33, 2),
 (286, 'Land Cruiser', 33, 6),
--- Volkswagen
+
 (287, 'Polo', 34, 1),
 (288, 'Golf', 34, 1),
 (289, 'Passat', 34, 1),
@@ -516,7 +513,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (293, 'Touareg', 34, 6),
 (294, 'Up!', 34, 1),
 (295, 'Sharan', 34, 1),
--- Lancia
+
 (296, 'Ypsilon', 35, 1),
 (297, 'Delta', 35, 1),
 (298, 'Voyager', 35, 1),
@@ -526,7 +523,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (302, 'Thema', 35, 1),
 (303, 'Phedra', 35, 1),
 (304, 'Dedra', 35, 1),
--- Chevrolet/Daewoo
+
 (305, 'Matiz', 36, 1),
 (306, 'Corvette', 36, 1),
 (307, 'Captiva', 36, 1),
@@ -535,40 +532,40 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (310, 'Trailblazer', 36, 6),
 
 
--- DAF
+
 (311, '95XF', 37, 3),
 (312, '105XF', 37, 3),
 (313, 'CF', 37, 3),
 (314, 'XD', 37, 3),
 (315, 'LF', 37, 3),
 (316, 'XB', 37, 3),
--- FORD
+
 (317, 'F-MAX', 20, 3),
 (318, 'CARGO', 20, 3),
--- IVECO
+
 (319, 'EuroStar', 39, 3),
 (320, 'Stralis', 39, 3),
 (321, 'S-WAY', 39, 3),
--- MAN
+
 (322, 'TGA', 40, 3),
 (323, 'TGX', 40, 3),
 (324, 'TGL', 40, 3),
 (325, 'TGM', 40, 3),
--- MERCEDES-BENZ
+
 (326, 'Actros', 41, 3),
 (327, 'Axor', 41, 3),
 (328, 'Atego', 41, 3),
--- RENAULT
-(329, 'Magnum', 42, 3),
-(330, 'Premium', 42, 3),
-(331, 'T-Series', 42, 3),
-(332, 'D-Series', 42, 3),
--- SCANIA
+
+(329, 'Magnum', 29, 3),
+(330, 'Premium', 29, 3),
+(331, 'T-Series', 29, 3),
+(332, 'D-Series', 29, 3),
+
 (333, 'S-Series', 43, 3),
 (334, 'G-Series', 43, 3),
 (335, 'R-Series', 43, 3),
 (336, 'XT-Series', 43, 3),
--- VOLVO
+
 (337, 'FH12', 44, 3),
 (338, 'FH16', 44, 3),
 (339, 'FL', 44, 3),
@@ -585,4 +582,5 @@ INSERT INTO cartappdb.fuel_types (id, name) VALUES
 (4, 'Biofuel'),
 (5, 'Electric');
 
-ALTER TABLE models AUTO_INCREMENT = 6;
+ALTER TABLE cartappdb.fuel_types AUTO_INCREMENT = 6;
+

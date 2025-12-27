@@ -46,6 +46,7 @@ INSERT INTO cartappdb.make_vehicle_types (make_id, vehicle_type_id) VALUES
 (30, 1),
 (30, 6),
 (31, 1),
+(31, 4),
 (31, 6),
 (31, 10),
 (32, 1),

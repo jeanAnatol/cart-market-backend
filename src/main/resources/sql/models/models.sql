@@ -117,7 +117,7 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (101, 'FZR', 13, 4),
 (102, 'Fazer 600', 13, 4),
 (103, 'FZR', 13, 4),
-(104, 'TZR', 13, 4),
+(104, 'TDM', 13, 4),
 (105, 'Ténéré', 13, 4),
 (106, 'T-MAX', 13, 4),
 (107, 'V-MAX', 13, 4),

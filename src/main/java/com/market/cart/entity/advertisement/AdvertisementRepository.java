@@ -17,6 +17,8 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 //    Optional<Advertisement> findByAdName(@Param("adName") String adName);
 
     List<Advertisement> findAll();
+    Optional<Advertisement> findByUuid(String uuid);
+    Boolean existsByUuid (String uuid);
 
 
 

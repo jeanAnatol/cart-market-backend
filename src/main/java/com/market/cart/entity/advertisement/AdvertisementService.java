@@ -207,10 +207,21 @@ public class AdvertisementService {
     /// Returns Advertisement by ID
     public AdvertisementReadOnlyDTO getAdvertismentById(Long id){
 
-        Advertisement advertisement = advertisementRepository.findById(id).orElseThrow();
+        Advertisement advertisement = advertisementRepository.findById(id)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No Advertisement found with id: "+ id, "advertisementService"));
 
         return advertisementMapper.toReadOnlyDTO(advertisement);
     }
+
+    /// Returns Advertisement by UUID
+    public AdvertisementReadOnlyDTO getAdvertismentByUuid(String uuid){
+
+        Advertisement advertisement = advertisementRepository.findByUuid(uuid)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No advertisement found wuth uuid: " + uuid, "advertisementService"));
+
+        return advertisementMapper.toReadOnlyDTO(advertisement);
+    }
+
 
     public void deleteAdvertisementByID(Long id) {
 

@@ -53,7 +53,7 @@ public class SecurityConfig {                                                   
                         .requestMatchers(
                                 "/api/advertisements/all",
                                 "/api/advertisements/search/**",
-                                "/api/advertisements/{id}"
+                                "/api/advertisements/{uuid}"
                         ).permitAll()
                         .requestMatchers("/api/users/new").permitAll()
                         .requestMatchers("/api/reference/**").permitAll()

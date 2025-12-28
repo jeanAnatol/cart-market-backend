@@ -119,13 +119,24 @@ public class AdvertisementRestController {
     }
 
     @Operation(summary = "Get Advertisement by ID")
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/id/{id}")
     public ResponseEntity<AdvertisementReadOnlyDTO> getAdvertisementById(@PathVariable Long id) {
 
         if (!advertisementRepository.existsById(id)) {
             throw new CustomTargetNotFoundException("No Advertisement found with id = "+ id, "advertisement");
         }
         AdvertisementReadOnlyDTO advByIdDTO = advertisementService.getAdvertismentById(id);
+        return ResponseEntity.ok(advByIdDTO);
+    }
+
+    @Operation(summary = "Get Advertisement by UUID")
+    @GetMapping(path = "/{uuid}")
+    public ResponseEntity<AdvertisementReadOnlyDTO> getAdvertisementByUuid(@PathVariable String uuid) {
+
+        if (!advertisementRepository.existsByUuid(uuid)) {
+            throw new CustomTargetNotFoundException("No Advertisement found with id = "+ uuid, "advertisement");
+        }
+        AdvertisementReadOnlyDTO advByIdDTO = advertisementService.getAdvertismentByUuid(uuid);
         return ResponseEntity.ok(advByIdDTO);
     }
 

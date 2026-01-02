@@ -46,32 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {             
 
         jwt = authHeader.substring(7).trim();
 
-//        try {
-//            username = jwtService.extractSubject(jwt);
-//
-//            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//
-//                if (!jwtService.isTokenValid(jwt, userDetails)) {
-//                    throw new BadCredentialsException("Invalid token");
-//                }
-//
-//                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                        userDetails, null, userDetails.getAuthorities()
-//                );
-//                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//            }
-//        }
-//        catch (Exception e) {
-//            // Log but DO NOT BLOCK THE REQUEST
-//            log.warn("JWT validation failed: {}", e.getMessage());
-//        }
-//        catch (ExpiredJwtException e) {
-//            throw new AuthenticationCredentialsNotFoundException("Expired Token", e);
-//        }catch (JwtException e) {
-//            throw new BadCredentialsException("Invalid Token");
-//        }
-
         try {
 //            final String token = getToken(request);
             if (jwt != null) {

@@ -23,7 +23,7 @@ public class UserRestController {
     @Operation(summary = "Create new User")
     @PostMapping("/new")
     public ResponseEntity<UserReadOnlyDTO> newUser(
-            @Valid @RequestPart("data") UserInsertDTO uInsDTO) {
+            @Valid @RequestBody UserInsertDTO uInsDTO) {
 
         UserReadOnlyDTO  savedUser = userService.saveUser(uInsDTO);
         return ResponseEntity.ok(savedUser);

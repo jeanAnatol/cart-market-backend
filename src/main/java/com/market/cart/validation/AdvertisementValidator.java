@@ -21,9 +21,6 @@ public class AdvertisementValidator {
             throw new CustomInvalidArgumentException("AdvertisementInsertDTO cannot be null.", "advertisementValidator");
         }
 
-        if (!userRepository.existsById(advInsDTO.userId())) {
-            throw new CustomTargetNotFoundException("User with ID " + advInsDTO.userId() + " not found.", "advertisementValidator");
-        }
 
         if (advInsDTO.price() <= 0) {
             throw new CustomInvalidArgumentException("Price must be greater than zero.", "advertisementValidator");

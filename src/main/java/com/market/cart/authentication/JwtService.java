@@ -34,7 +34,7 @@ public class JwtService {
         var claims = new HashMap<String, Object>();
         claims.put("role", role);
         return Jwts.builder()
-                .setIssuer("self") // TODO
+                .setIssuer("self")
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))  //when token is created

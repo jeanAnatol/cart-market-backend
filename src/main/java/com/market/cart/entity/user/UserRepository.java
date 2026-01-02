@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     Optional<User> deleteByUuid(String uuid);
 
+    Boolean existsByUsername(String username);
+
 
 //    @Query("SELECT advertisements(t) FROM User t WHERE t.username = ?1")
 //    Set<Advertisement> getAllAdvertisementsForUsername(String username);

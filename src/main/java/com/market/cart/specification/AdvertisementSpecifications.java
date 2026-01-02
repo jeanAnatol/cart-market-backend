@@ -47,7 +47,7 @@ public class AdvertisementSpecifications {
             if (locationName == null || locationName.isBlank()) return cBuilder.conjunction();
 
             return cBuilder.like(
-                    cBuilder.lower(root.get("vehicleDetails").get("locationName")),
+                    cBuilder.lower(root.get("location").get("locationName")),
                     "%" + locationName.toLowerCase() + "%"
             );
         };
@@ -58,7 +58,7 @@ public class AdvertisementSpecifications {
             if (postalCode == null || postalCode.isBlank()) return cBuilder.conjunction();
 
             return cBuilder.like(
-                    cBuilder.lower(root.get("vehicleDetails").get("postalCode")),
+                    cBuilder.lower(root.get("location").get("postalCode")),
                     "%" + postalCode.toLowerCase() + "%"
             );
         };

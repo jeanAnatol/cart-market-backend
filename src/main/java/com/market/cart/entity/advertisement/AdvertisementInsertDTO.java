@@ -10,9 +10,6 @@ import jakarta.validation.constraints.Positive;
 
 public record AdvertisementInsertDTO(
 
-        @NotNull(message = "User ID is required")
-        Long userId,
-
         @NotNull @Positive(message = "Price must be greater than 0")
         Double price,
 

@@ -1,6 +1,7 @@
 package com.market.cart.entity.advertisement;
 
 import com.market.cart.UploadProperties;
+import com.market.cart.authentication.JwtService;
 import com.market.cart.entity.attachment.Attachment;
 
 import com.market.cart.entity.attachment.AttachmentRepository;
@@ -21,6 +22,7 @@ import com.market.cart.filters.Paginated;
 import com.market.cart.specification.AdvertisementSpecifications;
 import com.market.cart.validation.AdvertisementValidator;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
@@ -58,9 +60,10 @@ public class AdvertisementService {
     private final AdvertisementValidator advertisementValidator;
     private final UserRepository userRepository;
     private final UploadProperties uploadProperties;
+    private final JwtService jwtService;
 
     @Transactional(rollbackOn = Exception.class)
-    public AdvertisementReadOnlyDTO saveAdvertisement(AdvertisementInsertDTO advInsDTO, Set<MultipartFile> images) {
+    public AdvertisementReadOnlyDTO saveAdvertisement(AdvertisementInsertDTO advInsDTO, Set<MultipartFile> images, HttpServletRequest request) {
 
         advertisementValidator.validateInsertDTO(advInsDTO);
         advertisementValidator.validateAttachments(images);
@@ -82,11 +85,10 @@ public class AdvertisementService {
                     .orElseThrow(() -> new CustomTargetNotFoundException(
                     "No Make found with id: "+ advInsDTO.vehicleDetailsInsertDTO().makeId(), "advertisementService"));
 
-            Advertisement advertisement = advertisementMapper.toAdvertisement(advInsDTO,vehicleType, fuelType,model, make);
+            User user = getUserFromToken(request);
 
-            advertisement.setUser(userRepository.findById(advInsDTO.userId())
-                    .orElseThrow(() -> new CustomTargetNotFoundException(
-                            "User not found with id:" + advInsDTO.userId(), "advertisementService")));
+            Advertisement advertisement = advertisementMapper.toAdvertisement(advInsDTO,vehicleType, fuelType,model, make, user);
+
 
             if (images != null && !images.isEmpty()) {
                 Set<Attachment> attachments = attachmentService.toSetAttachments(images);
@@ -282,5 +284,15 @@ public class AdvertisementService {
         Page<Advertisement> results = advertisementRepository.findAll(spec, pageable);
 
         return Paginated.onPage(results.map(advertisementMapper::toReadOnlyDTO));
+    }
+
+    private User getUserFromToken(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        String jwt = authHeader.substring(7).trim();
+        String username = jwtService.extractSubject(jwt);
+
+         return userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No user found with username: "+username, "advertisementService - getUserFromToken()"));
     }
 }

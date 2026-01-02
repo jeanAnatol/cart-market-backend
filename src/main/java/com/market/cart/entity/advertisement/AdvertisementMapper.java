@@ -11,6 +11,7 @@ import com.market.cart.entity.location.LocationMapper;
 
 import com.market.cart.entity.make.Make;
 import com.market.cart.entity.model.Model;
+import com.market.cart.entity.user.User;
 import com.market.cart.entity.vehicledetails.VehicleDetails;
 import com.market.cart.entity.vehicledetails.VehicleDetailsMapper;
 import com.market.cart.entity.vehicletype.VehicleType;
@@ -36,13 +37,15 @@ public class AdvertisementMapper {
             VehicleType vehicleType,
             FuelType fuelType,
             Model model,
-            Make make
+            Make make,
+            User user
     ) throws ParseException {
 
         Advertisement advertisement = new Advertisement();
 
         /// User id comes from the logged-in user that creates the advertisement
         advertisement.setPrice(advInsDTO.price());
+        advertisement.setUser(user);
 
         /// Build and Set Location
         Location location = locationMapper.toLocation(advInsDTO.locationInsertDTO());

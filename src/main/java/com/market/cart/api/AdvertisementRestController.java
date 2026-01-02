@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
@@ -37,7 +38,6 @@ import java.util.Set;
 public class AdvertisementRestController {
 
     private final AdvertisementService advertisementService;
-    private final AdvertisementRepository advertisementRepository;
     private final UploadProperties uploadProperties;
 
     @Operation(
@@ -53,7 +53,7 @@ public class AdvertisementRestController {
     public ResponseEntity<AdvertisementReadOnlyDTO> newAdvertisement(
             @Valid @RequestPart("data") AdvertisementInsertDTO advInsDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
-            BindingResult bindingResult) {
+            BindingResult bindingResult, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
@@ -61,7 +61,7 @@ public class AdvertisementRestController {
 
         Set<MultipartFile> imageSet = images != null ? new HashSet<>(images) : Collections.emptySet();
 
-        AdvertisementReadOnlyDTO advertisement = advertisementService.saveAdvertisement(advInsDTO, imageSet);
+        AdvertisementReadOnlyDTO advertisement = advertisementService.saveAdvertisement(advInsDTO, imageSet, request);
         return ResponseEntity.ok(advertisement);
     }
 
@@ -75,8 +75,6 @@ public class AdvertisementRestController {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
-
-//        Set<MultipartFile> imageSet = images != null ? new HashSet<>(images) : Collections.emptySet();
 
         AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images);
         return ResponseEntity.ok(readOnlyDTO);
@@ -98,46 +96,6 @@ public class AdvertisementRestController {
     ) {
         Paginated<AdvertisementReadOnlyDTO> advPage = advertisementService.getPaginatedAds(page, size);
         return ResponseEntity.ok(advPage);
-    }
-
-    @GetMapping(path = "/search")
-    public ResponseEntity<Paginated<AdvertisementReadOnlyDTO>> search(
-
-
-            @RequestParam(required = false) String vehicleType,
-            @RequestParam(required = false) String make,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String locationName,
-            @RequestParam(required = false) String postalCode,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-        return ResponseEntity.ok(
-                advertisementService.searchAdvertisements(page, size, vehicleType, make, model, locationName, postalCode, sortBy)
-        );
-    }
-
-    @Operation(summary = "Get Advertisement by ID")
-    @GetMapping(path = "/id/{id}")
-    public ResponseEntity<AdvertisementReadOnlyDTO> getAdvertisementById(@PathVariable Long id) {
-
-        if (!advertisementRepository.existsById(id)) {
-            throw new CustomTargetNotFoundException("No Advertisement found with id = "+ id, "advertisement");
-        }
-        AdvertisementReadOnlyDTO advByIdDTO = advertisementService.getAdvertismentById(id);
-        return ResponseEntity.ok(advByIdDTO);
-    }
-
-    @Operation(summary = "Get Advertisement by UUID")
-    @GetMapping(path = "/{uuid}")
-    public ResponseEntity<AdvertisementReadOnlyDTO> getAdvertisementByUuid(@PathVariable String uuid) {
-
-        if (!advertisementRepository.existsByUuid(uuid)) {
-            throw new CustomTargetNotFoundException("No Advertisement found with id = "+ uuid, "advertisement");
-        }
-        AdvertisementReadOnlyDTO advByIdDTO = advertisementService.getAdvertismentByUuid(uuid);
-        return ResponseEntity.ok(advByIdDTO);
     }
 
     @Operation(summary = "Delete Advertisement by ID")

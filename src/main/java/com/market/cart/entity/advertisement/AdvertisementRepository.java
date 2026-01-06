@@ -19,6 +19,7 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     List<Advertisement> findAll();
     Optional<Advertisement> findByUuid(String uuid);
     Boolean existsByUuid (String uuid);
+    Optional<Advertisement> deleteByUuid(String uuid);
 
 
 

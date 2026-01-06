@@ -1,13 +1,22 @@
 USE cartappdb;
 
--- INSERT ROLES
-INSERT INTO cartappdb.roles (id, name) VALUES
-(1, 'ADMIN'),
-(2, 'MODERATOR'),
-(3, 'USER');
+INSERT INTO cartappdb.roles (name)
+SELECT 'ADMIN'
+WHERE NOT EXISTS (
+    SELECT 1 FROM cartappdb.roles WHERE name = 'ADMIN'
+);
 
-ALTER TABLE cartappdb.roles AUTO_INCREMENT = 4;
+INSERT INTO cartappdb.roles (name)
+SELECT 'MODERATOR'
+WHERE NOT EXISTS (
+    SELECT 1 FROM cartappdb.roles WHERE name = 'MODERATOR'
+);
 
+INSERT INTO cartappdb.roles (name)
+SELECT 'USER'
+WHERE NOT EXISTS (
+    SELECT 1 FROM cartappdb.roles WHERE name = 'USER'
+);
 
 -- INSERT CAPABILITIES
 INSERT INTO cartappdb.capabilities (id, description, name) VALUES
@@ -32,10 +41,8 @@ INSERT INTO cartappdb.roles_capabilities (role_id, capability_id) VALUES
 (3,1),
 (3,2);
 
-
 -- SET SRID
 ALTER TABLE location_coordinates MODIFY coordinates POINT SRID 4326;
-
 
 -- INSERT VEHICLE_TYPES
 INSERT INTO cartappdb.vehicle_types (id, name) VALUES
@@ -52,7 +59,6 @@ INSERT INTO cartappdb.vehicle_types (id, name) VALUES
 (10, 'MPV');
 
 ALTER TABLE vehicle_types AUTO_INCREMENT = 11;
-
 
 -- INSERT MAKERS
 INSERT INTO cartappdb.makers (id, name) VALUES
@@ -107,7 +113,6 @@ INSERT INTO cartappdb.makers (id, name) VALUES
 (48, 'BOBCAT');
 
 ALTER TABLE makers AUTO_INCREMENT = 49;
-
 
 -- INSERT MAKE_VEHICLE_TYPES
 INSERT INTO cartappdb.make_vehicle_types (make_id, vehicle_type_id) VALUES
@@ -176,7 +181,6 @@ INSERT INTO cartappdb.make_vehicle_types (make_id, vehicle_type_id) VALUES
 (29, 3),
 (43, 3),
 (44, 3);
-
 
 -- INSERT MODELS
 INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
@@ -572,7 +576,6 @@ INSERT INTO cartappdb.models (id, name, make_id, vehicle_type_id) VALUES
 (340, 'FMX', 44, 3);
 
 ALTER TABLE models AUTO_INCREMENT = 341;
-
 
 -- INSERT FUEL_TYPES
 INSERT INTO cartappdb.fuel_types (id, name) VALUES

@@ -51,8 +51,7 @@ public class SecurityConfig {                                                   
                                 "/v2/api-docs"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/advertisements/all",
-                                "/api/advertisements/{uuid}"
+                                "/api/advertisements/all"
                         ).permitAll()
                         .requestMatchers("/api/users/new").permitAll()
                         .requestMatchers("/api/reference/**").permitAll()
@@ -63,7 +62,7 @@ public class SecurityConfig {                                                   
                         .requestMatchers("/api/users/find/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERATOR")
                         .requestMatchers("/api/advertisements/attachments/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS)) /// LOG-IN FORM (αντίστοιχο)
@@ -77,7 +76,7 @@ public class SecurityConfig {                                                   
 
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() { // 20250731 - 2:11:00
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));  // "POST", "PUT" etc
@@ -107,7 +106,6 @@ public class SecurityConfig {                                                   
     }
 
     // custom handlers for Spring Security's unauthorized (401) and forbidden (403) responses.
-
     // AccessDeniedHandler (Handles 403 Forbidden)
     // triggered when an authenticated user tries to access a resource they don’t have permissions for.
     // returns HTTP 403 Forbidden with a basic error page.

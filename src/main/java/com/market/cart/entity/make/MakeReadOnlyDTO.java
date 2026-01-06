@@ -7,7 +7,6 @@ import java.util.Set;
 public record MakeReadOnlyDTO(
         Long id,
         String name,
-//        Set<String> modelNames,
         Set<ModelReadOnlyDTO> models,
         Set<String> vehicleTypes
 ) {

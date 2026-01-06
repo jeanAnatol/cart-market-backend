@@ -1,12 +1,14 @@
 package com.market.cart.entity.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
 
+    private final PasswordEncoder passwordEncoder;
 
     
     public User toUser(UserInsertDTO userInsertDTO) {
@@ -14,7 +16,7 @@ public class UserMapper {
         User user = new User();
 
         user.setUsername(userInsertDTO.username());
-        user.setPassword(userInsertDTO.password());
+        user.setPassword(passwordEncoder.encode(userInsertDTO.password()));
         user.setEmail(userInsertDTO.email());
         return user;
     }
@@ -23,24 +25,23 @@ public class UserMapper {
 
         UserReadOnlyDTO userReadOnlyDTO = new UserReadOnlyDTO();
 
-        userReadOnlyDTO.setId(user.getId());
         userReadOnlyDTO.setUsername(user.getUsername());
         userReadOnlyDTO.setEmail(user.getEmail());
-        userReadOnlyDTO.setRoleId(user.getRole().getId());
+        userReadOnlyDTO.setRole(user.getRole().getName());
 
         return userReadOnlyDTO;
     }
 
-    public User updateUser (UserInsertDTO uInsDTO, User user) {
+    public User updateUser (UserUpdateDTO updateDTO, User user) {
 
-        if (!uInsDTO.username().isEmpty()) {
-            user.setUsername(uInsDTO.username());
+        if (!updateDTO.username().isEmpty()) {
+            user.setUsername(updateDTO.username());
         }
-        if (!uInsDTO.email().isEmpty()) {
-            user.setEmail(uInsDTO.email());
+        if (!updateDTO.email().isEmpty()) {
+            user.setEmail(updateDTO.email());
         }
-        if (!uInsDTO.password().isEmpty()) {
-            user.setPassword(uInsDTO.password());
+        if (!updateDTO.newPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updateDTO.newPassword()));
         }
 
         return user;

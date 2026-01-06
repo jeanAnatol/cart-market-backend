@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,11 @@ import java.util.function.Function;
 public class JwtService {
 
     /// to get secret key do in git-bash: openssl rand -base64 32, or -base64 48
-    /// this key: bndJi3wYaJHFFGbHcKxk5hoDGP5vKEXQpcER+rH+Svzzjt4+TmR/rtWIYItePgHa
+    /// app.security.secret-key=bndJi3wYaJHFFGbHcKxk5hoDGP5vKEXQpcER+rH+Svzzjt4+TmR/rtWIYItePgHa
     @Value("${app.security.secret-key}")
     private String secretKey;
 
+    /// app.security.jwt-expiration=10800000
     @Value("${app.security.jwt-expiration}")
     private long jwtExpiration;
 
@@ -70,6 +72,13 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public String getUsernameFromToken(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        String jwt = authHeader.substring(7).trim();
+        return extractSubject(jwt);
+     }
 
     /// EXTRACT SUBJECT
     public String extractSubject(String token) {

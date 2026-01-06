@@ -2,7 +2,6 @@ package com.market.cart.api;
 
 import com.market.cart.UploadProperties;
 import com.market.cart.entity.advertisement.*;
-import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import com.market.cart.exceptions.custom.ValidationException;
 import com.market.cart.filters.Paginated;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,13 +69,13 @@ public class AdvertisementRestController {
     public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
             @RequestPart("data") AdvertisementUpdateDTO advUpdateDTO,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
-            BindingResult bindingResult) throws ParseException {
+            BindingResult bindingResult, HttpServletRequest request) throws ParseException {
 
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
 
-        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images);
+        AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images, request);
         return ResponseEntity.ok(readOnlyDTO);
     }
 
@@ -98,10 +97,10 @@ public class AdvertisementRestController {
         return ResponseEntity.ok(advPage);
     }
 
-    @Operation(summary = "Delete Advertisement by ID")
-    @PostMapping(path = "/delete/{id}")
-    public void deleteAdvertisement(@PathVariable Long id) {
-        advertisementService.deleteAdvertisementByID(id);
+    @Operation(summary = "Delete Advertisement by UUID")
+    @DeleteMapping(path = "/delete/{uuid}")
+    public void deleteAdvertisement(@PathVariable String uuid) {
+        advertisementService.deleteAdvertisementByUUID(uuid);
     }
 
     @GetMapping("/attachments/{filename:.+}")
@@ -114,5 +113,8 @@ public class AdvertisementRestController {
                 .body(resource);
     }
 
-
+    @GetMapping("/user-ads")
+    public List<AdvertisementReadOnlyDTO> getUserAds(HttpServletRequest request) {
+        return advertisementService.getAdvertisementsByUser(request);
+    }
 }

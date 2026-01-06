@@ -4,7 +4,6 @@ import com.market.cart.UploadProperties;
 import com.market.cart.authentication.JwtService;
 import com.market.cart.entity.attachment.Attachment;
 
-import com.market.cart.entity.attachment.AttachmentRepository;
 import com.market.cart.entity.attachment.AttachmentService;
 import com.market.cart.entity.fueltype.FuelType;
 import com.market.cart.entity.fueltype.FuelTypeRepository;
@@ -33,6 +32,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,7 +55,6 @@ public class AdvertisementService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final MakeRepository makeRepository;
     private final ModelRepository modelRepository;
-    private final AttachmentRepository attachmentRepository;
     private final AdvertisementMapper advertisementMapper;
     private final AttachmentService attachmentService;
     private final AdvertisementValidator advertisementValidator;
@@ -85,7 +85,9 @@ public class AdvertisementService {
                     .orElseThrow(() -> new CustomTargetNotFoundException(
                     "No Make found with id: "+ advInsDTO.vehicleDetailsInsertDTO().makeId(), "advertisementService"));
 
-            User user = getUserFromToken(request);
+            String username = jwtService.getUsernameFromToken(request);
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new CustomTargetNotFoundException("No user found with username: "+username, "advertisementService-saveAdvertisement"));
 
             Advertisement advertisement = advertisementMapper.toAdvertisement(advInsDTO,vehicleType, fuelType,model, make, user);
 
@@ -110,12 +112,14 @@ public class AdvertisementService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, List<MultipartFile> images) throws ParseException {
+    public AdvertisementReadOnlyDTO updateAdvertisement(AdvertisementUpdateDTO advUpdateDTO, List<MultipartFile> images, HttpServletRequest request) throws ParseException {
 
-        User user = userRepository.findById(advUpdateDTO.userId())
-                .orElseThrow(() -> new CustomTargetNotFoundException("User with user id: "+ advUpdateDTO.userId() + " not found", "advertisementService"));
+        String username = jwtService.getUsernameFromToken(request);
 
-        Advertisement advertisement = advertisementRepository.findById(advUpdateDTO.adId())
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No User found with username: " + username, "advertisementService"));
+
+        Advertisement advertisement = advertisementRepository.findByUuid(advUpdateDTO.adUuid())
                 .orElseThrow(() -> new CustomTargetNotFoundException("Advertisement not found", "advertisementUpdate"));
 
         if (!user.getAdvertisements().contains(advertisement)) {
@@ -153,6 +157,9 @@ public class AdvertisementService {
 
         advertisementMapper.updateAdvertisement(advertisement, advUpdateDTO);
 
+
+        if (images != null && !images.isEmpty()) {
+
         List<MultipartFile> validImages = images.stream()
                 .filter(file -> file != null && !file.isEmpty())
                 .toList();
@@ -165,7 +172,7 @@ public class AdvertisementService {
 
             Set<Attachment> newAttachments = attachmentService.toSetAttachments(imageSet);
 
-            if (advUpdateDTO.keepOldAttachments().equals("false")) {
+            if (Boolean.TRUE.equals(advUpdateDTO.deleteOldAttachments())) {
                 /// Delete old files
 
                 Set<String> filenames = advertisement.getAttachments()
@@ -185,6 +192,7 @@ public class AdvertisementService {
                 advertisement.getAttachments().addAll(newAttachments);
             }
         }
+    }
         return advertisementMapper.toReadOnlyDTO(advertisementRepository.save(advertisement));
     }
 
@@ -224,13 +232,20 @@ public class AdvertisementService {
         return advertisementMapper.toReadOnlyDTO(advertisement);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public void deleteAdvertisementByUUID(String uuid) {
 
-    public void deleteAdvertisementByID(Long id) {
-
-        // TODO: Move file deletion in AttachmentService
-        Advertisement advertisement = advertisementRepository.findById(id)
+        Advertisement advertisement = advertisementRepository.findByUuid(uuid)
                 .orElseThrow(() -> new RuntimeException("Advertisement not found"));
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        if (!advertisement.getUser().getUsername().equals(username)) {
+            throw new CustomNotAuthorizedException("User is not allowed to delete an advertisement form another user", "advertisementService");
+        }
+
+        // TODO: Move file deletion in AttachmentService
         Set<String> imageNames = new HashSet<>();
         String uploadDir = uploadProperties.getDir();
 
@@ -251,8 +266,9 @@ public class AdvertisementService {
                 System.err.println("Failed to delete image: " + path);
             }
         }
-        // Delete DB entry
-        advertisementRepository.delete(advertisement);
+        advertisement.getUser().getAdvertisements().remove(advertisement);
+        advertisementRepository.deleteByUuid(uuid);
+
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -285,14 +301,17 @@ public class AdvertisementService {
 
         return Paginated.onPage(results.map(advertisementMapper::toReadOnlyDTO));
     }
+    public List<AdvertisementReadOnlyDTO> getAdvertisementsByUser(HttpServletRequest request) {
 
-    private User getUserFromToken(HttpServletRequest request) {
+        String username = jwtService.getUsernameFromToken(request);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No user found with username: "+username, "advertisementService-getAdvertisementsByUser"));
 
-        String authHeader = request.getHeader("Authorization");
-        String jwt = authHeader.substring(7).trim();
-        String username = jwtService.extractSubject(jwt);
 
-         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomTargetNotFoundException("No user found with username: "+username, "advertisementService - getUserFromToken()"));
+
+        return user.getAdvertisements()
+                .stream()
+                .map(advertisementMapper::toReadOnlyDTO)
+                .toList();
     }
 }

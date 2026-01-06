@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Administration of Makes, Models, Vehicle Types, Roles & Capabilities")
-//@SecuredApi
 public class AdminRestController {
 
     private final MakeService makeService;
@@ -60,7 +59,6 @@ public class AdminRestController {
         VehicleTypeReadOnlyDTO readOnlyDTO = vehicleTypeService.createVehicleType(vTypeInsDTO);
         return ResponseEntity.ok(readOnlyDTO);
     }
-
 
     @Operation(summary = "Update name of a vehicle type")             /// ΔΟΥΛΕΥΕΙ
     @PostMapping("/vehicle-types/{typeId}/update-name/{name}")
@@ -99,9 +97,6 @@ public class AdminRestController {
         makeService.removeVehicleType(makeId, typeId);
         return ResponseEntity.ok("VehicleType deleted from Make");
     }
-
-
-
 
     ///    ==============
     ///    MAKE ENDPOINTS

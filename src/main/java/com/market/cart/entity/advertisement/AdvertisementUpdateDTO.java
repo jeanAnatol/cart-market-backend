@@ -8,22 +8,18 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 public record AdvertisementUpdateDTO(
 
         @NotNull(message = "Advertisement ID is required")
-        Long adId,      /// *
-
-        @NotNull(message = "User ID is required")
-        Long userId,
+        String adUuid,
 
         @Nullable
         @Positive(message = "Price must be greater than 0")
         Double price,
 
-        @DefaultValue(value = "true")
-        String keepOldAttachments,
+        @Nullable
+        Boolean deleteOldAttachments,
 
         @Nullable
         @Valid

@@ -16,12 +16,10 @@ import java.util.Set;
 @Setter
 public class UserReadOnlyDTO {
 
-    private Long id;
-
     private String username;
 
     private String email;
 
-    private Long roleId;
+    private String role;
 
 }

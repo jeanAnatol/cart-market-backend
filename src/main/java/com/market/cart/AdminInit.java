@@ -26,17 +26,20 @@ public class AdminInit {
 
     @PostConstruct
     public void init() {
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setName("ADMIN");
+                    return roleRepository.save(role);
+                });
         if (!userRepository.existsByUsername("admin")) {
             User admin = new User();
-            Role role = roleRepository.findById(1L).orElseThrow(() -> new CustomTargetNotFoundException("No role found with role id: 1", "adminInitializer"));
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode(adminPassword));
-            admin.setRole(role);
             admin.setEmail("admin@mail.gg");
+            admin.setRole(adminRole);
 
             userRepository.save(admin);
         }
     }
-
-
 }

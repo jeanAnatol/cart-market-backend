@@ -1,10 +1,12 @@
 package com.market.cart.entity.user;
 
+import com.market.cart.authentication.JwtService;
 import com.market.cart.entity.role.Role;
 import com.market.cart.entity.role.RoleRepository;
 import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
 import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import com.market.cart.validation.UserValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,11 @@ public class UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final UserValidator userValidator;
-
-    public final PasswordEncoder passwordEncoder;
+    public final JwtService jwtService;
 
     public UserReadOnlyDTO saveUser(UserInsertDTO uInsDTO) {
 
+        userValidator.validateInsertDTO(uInsDTO);
 
         if (userRepository.findByUsername(uInsDTO.username()).isPresent()) {
             throw new CustomTargetAlreadyExistsException("Username \""+uInsDTO.username()+"\" already exists", "userService");
@@ -30,17 +32,9 @@ public class UserService {
             throw new CustomTargetAlreadyExistsException("Email \""+uInsDTO.email()+"\" already exists.", "userService");
         }
         User user = userMapper.toUser(uInsDTO);
-        user.setPassword(passwordEncoder.encode(uInsDTO.password()));
 
-        Role role;
-
-        /// If roleId does not exist, or it is null, the role is set to USER by default
-        if (uInsDTO.roleId() != null) {
-            role = roleRepository.findById(uInsDTO.roleId())
-                    .orElse(defaultRole());
-        }else{
-            role = defaultRole();
-        }
+        /// The role is set to USER by default
+        Role role = defaultRole();
 
         user.setRole(role);
         role.getUsers().add(user);
@@ -59,11 +53,20 @@ public class UserService {
                 .orElseThrow(() -> new CustomTargetNotFoundException("User not found with UUID: "+uuid, "userService"));
     }
 
-    public UserReadOnlyDTO updateUser(String uuid, UserInsertDTO uInsDTO) {
-        User user = userRepository.findByUuid(uuid)
-                .orElseThrow(() -> new CustomTargetNotFoundException("User not found with uuid: "+uuid, "userService"));
-        userValidator.validateInsertDTO(uInsDTO);
-        userRepository.save(userMapper.updateUser(uInsDTO, user));
+    public UserReadOnlyDTO getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No User found with username: "+ username, "userService"));
+        return userMapper.toReadOnlyDTO(user);
+    }
+
+    public UserReadOnlyDTO updateUser(UserUpdateDTO updateDTO, HttpServletRequest request) {
+
+        String username = jwtService.getUsernameFromToken(request);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomTargetNotFoundException("User not found with username: "+username, "userService"));
+        userValidator.validateUpdateDTO(updateDTO, user);
+
+        userRepository.save(userMapper.updateUser(updateDTO, user));
 
         return userMapper.toReadOnlyDTO(user);
     }
@@ -84,8 +87,6 @@ public class UserService {
 
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("Role not found with id: "+roleId, "userService"));
-
-
         user.addRole(role);
         userRepository.save(user);
     }

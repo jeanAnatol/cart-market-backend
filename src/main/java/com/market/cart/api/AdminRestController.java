@@ -86,18 +86,6 @@ public class AdminRestController {
         return ResponseEntity.ok("VehicleType deleted successfully");
     }
 
-
-    /// Remove Vehicle Type From Make
-    @Operation(summary = "Remove vehicle type from a Make")
-    @DeleteMapping("/makes/{makeId}/delete-vehicle-type/{typeId}")
-    public ResponseEntity<?> deleteVehicleTypeFromMake(
-            @PathVariable Long makeId,
-            @PathVariable Long typeId) {
-
-        makeService.removeVehicleType(makeId, typeId);
-        return ResponseEntity.ok("VehicleType deleted from Make");
-    }
-
     ///    ==============
     ///    MAKE ENDPOINTS
     ///    ==============
@@ -121,13 +109,38 @@ public class AdminRestController {
 
     /// Update Make
     @Operation(summary = "Update make name")
-    @PutMapping("/makes/{id}/update-name/{name}")
+    @PutMapping("/makes/update/{id}/update-name/{name}")
     public ResponseEntity<MakeReadOnlyDTO> updateMake(
             @PathVariable Long makeId,
             @PathVariable String name) {
         MakeReadOnlyDTO readOnlyDTO = makeService.updateMake(makeId, name);
         return ResponseEntity.ok(readOnlyDTO);
     }
+
+    /// Add vehicle type to make
+    @Operation(summary = "Add vehicle type to Make")
+    @PostMapping("/makes/{makeId}/add-vehicle-type/{typeId}")
+    public ResponseEntity<?> addVehicleTypeFromMake(
+            @PathVariable Long makeId,
+            @PathVariable Long typeId) {
+
+        makeService.addVehicleType(makeId, typeId);
+        return ResponseEntity.ok("VehicleType added to Make");
+    }
+
+
+    /// Remove Vehicle Type From Make
+    @Operation(summary = "Remove vehicle type from a Make")
+    @DeleteMapping("/makes/{makeId}/remove-vehicle-type/{typeId}")
+    public ResponseEntity<?> deleteVehicleTypeFromMake(
+            @PathVariable Long makeId,
+            @PathVariable Long typeId) {
+
+        makeService.removeVehicleType(makeId, typeId);
+        return ResponseEntity.ok("VehicleType deleted from Make");
+    }
+
+
 
     /// Delete Make
     @Operation(summary = "Delete make")

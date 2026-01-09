@@ -40,16 +40,21 @@ public class MakeService {
             throw new CustomTargetAlreadyExistsException("Make with name: " +insertDTO.name()+ " already exists", "makeService");
         }
 
-        VehicleType vehicleType = vehicleTypeRepository.findById(insertDTO.vehicleTypeId())
+        Make make = makeMapper.toMake(insertDTO);
+        Set<VehicleType> vehicleTypes = new HashSet<>();
+
+        for (Long id : insertDTO.vehicleTypeId()) {
+
+            VehicleType vehicleType = vehicleTypeRepository.findById(id)
                 .orElseThrow(() -> new CustomTargetNotFoundException("No Vehicle Type found with this id: "+ insertDTO.vehicleTypeId(), "makeService"));
 
+            vehicleType.getMakes().add(make);
+            vehicleTypes.add(vehicleType);
+        }
 
-        Make make = makeMapper.toMake(insertDTO);
-        make.getVehicleTypes().add(vehicleType);
-        vehicleType.getMakes().add(make);
-
+        make.getVehicleTypes().addAll(vehicleTypes);
         makeRepository.save(make);
-        vehicleTypeRepository.save(vehicleType);
+
         Set<ModelReadOnlyDTO> models = getModelDTO(make);
 
         return makeMapper.toReadOnlyDTO(make, models);

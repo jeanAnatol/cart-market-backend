@@ -76,6 +76,10 @@ public class AdminInit {
             log.warn("Admin user not found — creating default admin account");
             User admin = new User();
             admin.setUsername("admin");
+            if (adminPassword == null || adminPassword.isBlank()) {
+                log.error("app.admin.password is EMPTY. Defaulting to PASSWORD 'admin' for safety.");
+                adminPassword = "admin";
+            }
             admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setEmail("admin@mail.gg");
             admin.setRole(adminRole);

@@ -1,6 +1,7 @@
 package com.market.cart.filters.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,16 +27,42 @@ import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Central Spring Security configuration for the application.
+ *
+ * <p>
+ * This configuration:
+ * </p>
+ * <ul>
+ *     <li>Defines JWT-based stateless authentication</li>
+ *     <li>Configures endpoint authorization rules</li>
+ *     <li>Registers custom authentication and access-denied handlers</li>
+ *     <li>Enables CORS for frontend integration</li>
+ * </ul>
+ */
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class SecurityConfig {                                                                   /// 20250731 - 2:08:00
+@Slf4j
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
 
+    /**
+     * Configures the main Spring Security filter chain.
+     *
+     * @param http                    HTTP security configuration
+     * @param authenticationProvider  authentication provider implementation
+     * @return configured {@link SecurityFilterChain}
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
+
+        log.info("Initializing Spring Security filter chain");
+
         http
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -74,9 +101,21 @@ public class SecurityConfig {                                                   
         return http.build();
     }
 
-
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS).
+     *
+     * <p>
+     * Allows requests from frontend development servers
+     * and supports Authorization headers.
+     * </p>
+     *
+     * @return CORS configuration source
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+
+        log.debug("Configuring CORS settings");
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));  // "POST", "PUT" etc
@@ -87,38 +126,75 @@ public class SecurityConfig {                                                   
         return source;
     }
 
+    /**
+     * Defines the authentication provider using DAO-based authentication.
+     *
+     * @param userDetailsService user details service
+     * @param passwordEncoder   password encoder
+     * @return configured {@link AuthenticationProvider}
+     */
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
                                                          PasswordEncoder passwordEncoder) {
+        log.debug("Registering DAO authentication provider");
+
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
+    /**
+     * Exposes the authentication manager bean.
+     *
+     * @param config authentication configuration
+     * @return authentication manager
+     * @throws Exception if creation fails
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Password encoder used for hashing user passwords.
+     *
+     * <p>
+     * BCrypt with strength 12 provides strong resistance
+     * against brute-force attacks.
+     * </p>
+     *
+     * @return password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
+        log.debug("Initializing BCryptPasswordEncoder (strength=12)");
         return new BCryptPasswordEncoder(12);
     }
 
-    // custom handlers for Spring Security's unauthorized (401) and forbidden (403) responses.
-    // AccessDeniedHandler (Handles 403 Forbidden)
-    // triggered when an authenticated user tries to access a resource they don’t have permissions for.
-    // returns HTTP 403 Forbidden with a basic error page.
-    // want to return a consistent JSON response (common in REST APIs):
+    /**
+     * Custom handler for HTTP 403 Forbidden responses.
+     *
+     * <p>
+     * Triggered when an authenticated user lacks sufficient privileges.
+     * </p>
+     *
+     * @return access denied handler
+     */
     @Bean
     public AccessDeniedHandler myCustomAccessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
 
-    // AuthenticationEntryPoint (Handles 401 Unauthorized)
-    // Triggered when an unauthenticated user tries to access a secured resource.
-    // Default behavior: Redirects to login page (for web apps) or returns HTTP 401 (for APIs).
-    // want retrn to a structured JSON response for APIs:
+    /**
+     * Custom handler for HTTP 401 Unauthorized responses.
+     *
+     * <p>
+     * Triggered when unauthenticated access is attempted
+     * on a secured endpoint.
+     * </p>
+     *
+     * @return authentication entry point
+     */
     @Bean
     public AuthenticationEntryPoint myCustomAuthenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint();

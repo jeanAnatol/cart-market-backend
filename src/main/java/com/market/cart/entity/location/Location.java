@@ -2,6 +2,7 @@ package com.market.cart.entity.location;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.market.cart.entity.abstractentity.AbstractEntity;
 import com.market.cart.entity.advertisement.Advertisement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
 
-import java.util.Set;
+/**
+ * <p>The Location class stores all location and spatial information of the advertisement:
+ *  latitude and longitude in String.</p>
+ *  Also stores coordinates in {@link Geometry}.
+ *  The Location is created with every new Advertisement and wiped with every Advertisement deletion.
+ */
 
 @Getter
 @Setter
@@ -18,7 +24,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "location_coordinates")
-public class Location {
+public class Location extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,20 +34,19 @@ public class Location {
 
     private String postalCode;
 
-///// 1<->1 To advertisements - Location is a subEntity and relative to advertisement, not a solid permanent entity
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    private Advertisement advertisement;
-
+    /**
+     * 1<->1 To advertisements - Location is a subEntity and relative to advertisement
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "advertisement_id")
-    @JsonBackReference // prevents infinite loop
+    @JsonBackReference /// prevents circular reference -> infinite loop
     private Advertisement advertisement;
 
-    // Spatial column
+    /**
+     * Spatial column, ignored in json response
+     */
     @JsonIgnore
-    @Column(
-//            columnDefinition = "geometry(Point, 4326)",
-            nullable = false)
+    @Column(nullable = false)
     private Geometry coordinates;
 
     @Column(name = "longitude")
@@ -49,6 +54,4 @@ public class Location {
 
     @Column(name = "latitude")
     private String latitude;
-
-
 }

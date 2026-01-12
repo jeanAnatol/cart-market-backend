@@ -1,5 +1,6 @@
 package com.market.cart.entity.contactinfo;
 
+import com.market.cart.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,13 +9,17 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ *  This class holds all the contact information of the Advertisement publisher
+ */
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "contact_info")
-public class ContactInfo {
+public class ContactInfo extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

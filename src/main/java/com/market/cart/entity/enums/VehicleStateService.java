@@ -7,11 +7,15 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Returns the labels of the enumerated values.
+ */
 @Service
 @AllArgsConstructor
 public class VehicleStateService {
 
     public Set<String> getAllVehicleStates() {
+
         return Arrays.stream(VehicleState.values())
                 .map(VehicleState::getLabel)
                 .collect(Collectors.toUnmodifiableSet());

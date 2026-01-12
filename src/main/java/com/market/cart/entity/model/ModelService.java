@@ -8,14 +8,23 @@ import com.market.cart.exceptions.custom.CustomInvalidArgumentException;
 import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
 import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for managing {@link Model} entities.
+ *
+ * <p>
+ * Handles creation, update, deletion, and reassignment of models
+ * between {@link Make} and {@link VehicleType}.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ModelService {
 
     private final ModelRepository modelRepository;
@@ -23,6 +32,9 @@ public class ModelService {
     private final MakeRepository makeRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Creates a new Model and associates it with a Make and VehicleType.
+     */
     @Transactional
     public ModelReadOnlyDTO addModel(ModelInsertDTO insertDTO) {
 
@@ -44,6 +56,11 @@ public class ModelService {
         make.getModels().add(model);
         vehicleType.getModels().add(model);
 
+        log.debug("Model '{}' created under Make '{}' and VehicleType '{}'",
+                model.getName(),
+                make.getName(),
+                vehicleType.getName());
+
         return modelMapper.toReadOnlyDTO(modelRepository.save(model));
     }
 
@@ -59,6 +76,9 @@ public class ModelService {
                 .orElseThrow(() -> new CustomTargetNotFoundException("Model not found: " + id, "ModelService"));
     }
 
+    /**
+     * Updates Model fields and optionally reassigns Make and VehicleType.
+     */
     @Transactional
     public ModelReadOnlyDTO updateModel(ModelUpdateDTO updateDTO) {
 
@@ -75,7 +95,14 @@ public class ModelService {
             Make newMake = makeRepository.findById(updateDTO.makeId())
                     .orElseThrow(() ->
                             new CustomTargetNotFoundException("No Make found with id: "+updateDTO.makeId(), "modelService"));
-            if (oldMake != newMake) {
+
+            boolean exists = newMake.getModels().contains(model);
+            if (oldMake != newMake && !exists) {
+                log.debug("Reassigning Model '{}' from Make '{}' to '{}'",
+                        model.getName(),
+                        oldMake.getName(),
+                        newMake.getName());
+
                 oldMake.getModels().remove(model);
                 model.setMake(newMake);
                 newMake.getModels().add(model);
@@ -88,16 +115,25 @@ public class ModelService {
                     .orElseThrow(() ->
                             new CustomTargetNotFoundException("No Vehicle Type found with id: "+updateDTO.vehicleTypeId(), "modelService"));
 
-            if (oldVehicleType != newVehicleType) {
+            if (!oldVehicleType.equals(newVehicleType)) {
+                log.debug("Reassigning Model '{}' from VehicleType '{}' to '{}'",
+                        model.getName(),
+                        oldVehicleType.getName(),
+                        newVehicleType.getName());
+
                 oldVehicleType.getModels().remove(model);
                 model.setVehicleType(newVehicleType);
                 newVehicleType.getModels().add(model);
             }
         }
+        log.info("Updating Model with id: {} and name: {}", updateDTO.modelId(), model.getName());
 
         return modelMapper.toReadOnlyDTO(modelRepository.save(model));
     }
 
+    /**
+     * Deletes a Model and clears all associations.
+     */
     @Transactional
     public void deleteModel(Long modelId) {
         Model model = modelRepository.findById(modelId)
@@ -110,6 +146,7 @@ public class ModelService {
         VehicleType vehicleType = model.getVehicleType();
         vehicleType.getModels().remove(model);
 
+        log.warn("Removed Model with id: {} and name: {}", modelId, model.getName());
         modelRepository.delete(model);
     }
 }

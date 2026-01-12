@@ -12,6 +12,8 @@ import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
 import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import lombok.Locked;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+/**
+ * Service responsible for managing {@link Make} entities and their
+ * relationships with {@link Model} and {@link VehicleType}.
+ *
+ * <p>One {@link Make} can belong to many {@link VehicleType} and can own many {@link Model}</p>
+ * <p>
+ * Handles creation, update, deletion, and association logic.
+ * All write operations are transactional.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MakeService {
 
     private final MakeRepository makeRepository;
@@ -54,7 +67,7 @@ public class MakeService {
 
         make.getVehicleTypes().addAll(vehicleTypes);
         makeRepository.save(make);
-
+        log.info("Created Make with name: {}", insertDTO.name());
         Set<ModelReadOnlyDTO> models = getModelDTO(make);
 
         return makeMapper.toReadOnlyDTO(make, models);
@@ -94,24 +107,31 @@ public class MakeService {
     @Transactional
     public MakeReadOnlyDTO updateMake(Long makeId, String name) {
 
+        String oldName;
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be blank or null");
         }
         Make make = makeRepository.findById(makeId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("Make not found with id: "+ makeId, "makeService"));
 
+        oldName = make.getName();
         make.setName(name);
         Set<ModelReadOnlyDTO> models = getModelDTO(make);
 
-
+        log.info("Make with id: {} updated name from: {} to: {}", makeId, oldName, name);
         return makeMapper.toReadOnlyDTO(makeRepository.save(make), models);
     }
 
-    /// Delete Make
+    /**
+     * Delete Make. Cascading action, will remove associated Models
+     * @param makeId
+     */
     @Transactional
     public void deleteMake(Long makeId) {
-        Make make = makeRepository.findById(makeId)
-                        .orElseThrow(() -> new CustomTargetNotFoundException("No make found with ID: "+makeId, "makeService"));
+
+        String makeName;
+        Make make = getMakeById(makeId);
+        makeName= make.getName();
 
         if (!make.getVehicleTypes().isEmpty()) {
             Set<VehicleType> vTypes = make.getVehicleTypes();
@@ -123,49 +143,65 @@ public class MakeService {
         }
 
         if (!make.getModels().isEmpty()) {
-            Set<Model> models = make.getModels();
 
+            Set<Model> models = make.getModels();
             for (Model m : models) {
                 m.setMake(null);
             }
             make.getModels().clear();
         }
 
+        log.warn("Removed Make with id: {} and name: {}", makeId, makeName);
         makeRepository.delete(make);
     }
 
-    // attach vehicle type to make (bidirectional managed)
+    /**
+     * Attach Vehicle Type to Make (bidirectionally managed)
+     * @param makeId
+     * @param vehicleTypeId
+     */
     @Transactional
     public void addVehicleType(Long makeId, Long vehicleTypeId) {
-        Make make = makeRepository.findById(makeId)
-                .orElseThrow(() -> new CustomTargetNotFoundException("No Make found with id: " + makeId, "makeService"));
+
+        String makeName;
+        String vehicleTypeName;
+
+        Make make = getMakeById(makeId);
+        makeName = make.getName();
         VehicleType vehicleType = vehicleTypeRepository.findById(vehicleTypeId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("VehicleType not found: " + vehicleTypeId, "MakeService"));
+        vehicleTypeName = vehicleType.getName();
 
         make.getVehicleTypes().add(vehicleType);
         vehicleType.getMakes().add(make);
 
-
         makeRepository.save(make);
         vehicleTypeRepository.save(vehicleType);
+        log.info("Added Vehicle Type: {} to Make: {}", vehicleTypeName, makeName);
     }
 
 
     @Transactional
     public void removeVehicleType(Long makeId, Long vehicleTypeId) {
+        String makeName;
+        String vehicleTypeName;
+
         Make make = getMakeById(makeId);
+        makeName = make.getName();
         VehicleType vehicleType = vehicleTypeRepository.findById(vehicleTypeId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("VehicleType not found: " + vehicleTypeId, "MakeService"));
+        vehicleTypeName = vehicleType.getName();
 
-        boolean removed = make.getVehicleTypes().remove(vehicleType);
-        if (removed && vehicleType.getMakes() != null) {
-            vehicleType.getMakes().remove(make);
-            makeRepository.save(make);
-            vehicleTypeRepository.save(vehicleType);
-        }
+        make.getVehicleTypes().remove(vehicleType);
+        vehicleType.getMakes().remove(make);
+
+        makeRepository.save(make);
+        vehicleTypeRepository.save(vehicleType);
+
+        log.info("Vehicle Type: {} removed from Make: {}", vehicleTypeName, makeName);
     }
 
-    // Add Model in Make
+    /// Add Model to Make. Not in use since Models are added from Model Service. Marked for removal
     @Transactional
     public Model addModelToMake(Long makeId, String modelName) {
         if (modelName == null || modelName.isBlank())
@@ -192,6 +228,7 @@ public class MakeService {
         return model;
     }
 
+    /// Add Model to Make. Not in use since Models are removed from Model Service. Marked for removal
     @Transactional
     public void removeModelFromMake(Long makeId, Long modelId) {
         Make make = getMakeById(makeId);

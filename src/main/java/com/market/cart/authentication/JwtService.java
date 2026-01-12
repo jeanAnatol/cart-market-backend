@@ -6,16 +6,39 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
 
+/**
+ * Service responsible for JSON Web Token (JWT) creation, validation,
+ * and claim extraction.
+ *
+ * <p>
+ * This service handles:
+ * </p>
+ * <ul>
+ *     <li>JWT generation with custom claims</li>
+ *     <li>JWT validation (subject & expiration)</li>
+ *     <li>Claim extraction from tokens</li>
+ * </ul>
+ *
+ * <p>
+ * Tokens are signed using HMAC SHA-256 with a Base64-encoded secret key.
+ * </p>
+ *
+ * <p>
+ * <strong>Security note:</strong> Token contents, secret keys, and signatures
+ * are never logged.
+ * </p>
+ */
 @Service
+@Slf4j
 public class JwtService {
 
     /// to get secret key do in git-bash: openssl rand -base64 32, or -base64 48
@@ -27,10 +50,15 @@ public class JwtService {
     @Value("${app.security.jwt-expiration}")
     private long jwtExpiration;
 
-
-
-    /// GENERATE TOKEN
+    /**
+     * Generates a signed JWT for the given user.
+     *
+     * @param username authenticated username
+     * @param role     user role to be stored as a custom claim
+     * @return signed JWT token
+     */
     public String createToken(String username, String role) {
+        log.info("Generating JWT token for user: {}", username);
 
         /// HashMap username and role into claims
         var claims = new HashMap<String, Object>();
@@ -44,11 +72,21 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    /// Check if token is valid in terms of valid userDetails and expiration
+
+    /**
+     * Validates a JWT against user details and expiration.
+     *
+     * @param token       JWT token
+     * @param userDetails authenticated user details
+     * @return {@code true} if token is valid, otherwise {@code false}
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String subject = extractSubject(token);
+
         /// check if token subject equals authorized username. UserDetails draws from SecurityContextHolder
-        return (subject.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        boolean valid = subject.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        log.info("Token validation result for user {}: {}", subject, valid);
+        return valid;
     }
 
     /// EXTRACT TOKEN CLAIM
@@ -66,16 +104,28 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
     }
-
     /// GET SIGN-IN KEY
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
+    /**
+     * Extracts the username (subject) from a JWT contained in the request header.
+     *
+     * @param request HTTP servlet request
+     * @return username stored in the token
+     *
+     * @throws StringIndexOutOfBoundsException if Authorization header is malformed
+     */
     public String getUsernameFromToken(HttpServletRequest request) {
 
         String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("Missing or malformed Authorization header");
+            return null;
+        }
+
         String jwt = authHeader.substring(7).trim();
         return extractSubject(jwt);
      }

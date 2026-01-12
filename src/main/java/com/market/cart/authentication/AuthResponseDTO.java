@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  *This is the response of the server to the client(user)
- * The username is included in order to compose a greeting to the user after successful login
+ * The username is included
  */
 
 @Data

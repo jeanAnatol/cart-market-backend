@@ -1,12 +1,14 @@
 package com.market.cart.entity.attachment;
 
+import com.market.cart.entity.abstractentity.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
 
 /**
- * Vehicle photos. Linked to Advertisement
+ * Vehicle images dependant to Advertisement.
+ * <p>They store the url of the saved image in "/uploads" directory.</p>
+ * Spring gives an uuid at persistence
  */
 @Builder
 @AllArgsConstructor
@@ -15,7 +17,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "attachments")
-public class Attachment {
+public class Attachment extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +33,10 @@ public class Attachment {
 
     private String contentType;
 
+    ///  -OPTIONAL FIELD, NEEDS A FRESH AND EMPTY DB-
     /// Specifies that a persistent property or field should be persisted as a large object to a database-supported large object type.
-//    @Lob    //    private byte[] data;
+//    @Lob
+//    private byte[] data;
 
     private String url;
 
@@ -44,5 +48,4 @@ public class Attachment {
             uuid = UUID.randomUUID().toString();
         }
     }
-
 }

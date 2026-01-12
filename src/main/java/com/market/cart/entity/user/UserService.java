@@ -8,11 +8,21 @@ import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import com.market.cart.validation.UserValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsible for user management operations.
+ *
+ * <p>
+ * Handles user creation, retrieval, updates, role assignment,
+ * and deletion. Validation and security context resolution
+ * are delegated to dedicated components.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -21,6 +31,16 @@ public class UserService {
     private final UserValidator userValidator;
     public final JwtService jwtService;
 
+    /**
+     * Creates and persists a new user.
+     *
+     * <p>
+     * Applies validation rules and assigns the default {@code USER} role.
+     * </p>
+     *
+     * @param uInsDTO user insert DTO
+     * @return read-only representation of the created user
+     */
     public UserReadOnlyDTO saveUser(UserInsertDTO uInsDTO) {
 
         userValidator.validateInsertDTO(uInsDTO);
@@ -59,6 +79,17 @@ public class UserService {
         return userMapper.toReadOnlyDTO(user);
     }
 
+    /**
+     * Updates the authenticated user's profile.
+     *
+     * <p>
+     * The user is resolved from the JWT token in the request.
+     * </p>
+     *
+     * @param updateDTO update data
+     * @param request HTTP request containing JWT
+     * @return updated user DTO
+     */
     public UserReadOnlyDTO updateUser(UserUpdateDTO updateDTO, HttpServletRequest request) {
 
         String username = jwtService.getUsernameFromToken(request);
@@ -71,6 +102,9 @@ public class UserService {
         return userMapper.toReadOnlyDTO(user);
     }
 
+    /**
+     * Replaces the user's current role with a new one.
+     */
     public void addRoleToUser(Long userId, Long roleId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomTargetNotFoundException("User not found with id: "+userId, "userService"));
@@ -91,11 +125,18 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void removeRole(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomTargetNotFoundException("User not found with id: "+userId, "userService"));
-        user.setRole(null);
-    }
+    /**
+     * <h2>Currently not in use.</h2>
+     * No infrastructure to support a user without a role in any event that this might happen.
+     * Removes the role from the user and clears the association.
+     */
+//    public void removeRole(Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new CustomTargetNotFoundException("User not found with id: "+userId, "userService"));
+//        Role role = user.getRole();
+//        role.getUsers().remove(user);
+//        user.removeRole(role);
+//    }
 
     public void deleteUser(String uuid) {
         if (userRepository.findByUuid(uuid).isEmpty()) {
@@ -104,6 +145,11 @@ public class UserService {
         userRepository.deleteByUuid(uuid);
     }
 
+    /**
+     * Resolves the default role assigned to new users.
+     *
+     * @return USER role
+     */
     public Role defaultRole() {
         return roleRepository.findByName("USER").
                 orElseThrow(() -> new CustomTargetNotFoundException("No Role found with name: USER", "userService"));

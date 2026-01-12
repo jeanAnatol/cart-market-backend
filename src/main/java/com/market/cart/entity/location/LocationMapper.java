@@ -31,7 +31,6 @@ public class LocationMapper {
         return location;
     }
 
-
     public LocationReadOnlyDTO toReadOnlyDTO(Location location) {
 
         LocationReadOnlyDTO locationReadOnlyDTO = new LocationReadOnlyDTO();
@@ -60,7 +59,6 @@ public class LocationMapper {
         return geometry;
     }
 
-
     public Point mapCoordToPoint(String longitude, String latitude) {
 
         double lon = Double.parseDouble(longitude);
@@ -68,7 +66,6 @@ public class LocationMapper {
 
         Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
         point.setSRID(4326);
-
 
         return point;
     }

@@ -8,7 +8,6 @@ import java.util.Set;
 
 public record CapabilityInsertDTO(
         @NotBlank(message = "Capability name cannot be blank.") String name,
-        @NotBlank(message = "Capability description cannot be blank.") String description,
-        Set<Role> roles
+        @NotBlank(message = "Capability description cannot be blank.") String description
 ) {
 }

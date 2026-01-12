@@ -29,6 +29,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * REST controller responsible for managing advertisements.
+ *
+ * <p>
+ * Provides endpoints for creating, updating, retrieving, deleting,
+ * and serving advertisement-related resources, including image attachments.
+ * </p>
+ *
+ * <p>
+ * All advertisement creation and update operations are handled as
+ * multipart requests, combining JSON DTO payloads and optional image files.
+ * </p>
+ */
+
 @RestController
 @RequestMapping("/api/advertisements")
 @Tag(name = "Advertisements", description = "Create, update, and manage advertisements")
@@ -39,6 +53,24 @@ public class AdvertisementRestController {
     private final AdvertisementService advertisementService;
     private final UploadProperties uploadProperties;
 
+    /**
+     * Creates a new advertisement.
+     *
+     * <p>
+     * Expects a multipart/form-data request containing:
+     * </p>
+     * <ul>
+     *   <li><b>data</b> – JSON payload mapped to {@link AdvertisementInsertDTO}</li>
+     *   <li><b>images</b> – Optional list of image files</li>
+     * </ul>
+     *
+     * @param advInsDTO the advertisement data transfer object
+     * @param images optional list of uploaded image files
+     * @param bindingResult validation results for the DTO
+     * @param request HTTP request containing authentication token
+     * @return the created advertisement as a read-only DTO
+     * @throws ValidationException if validation errors are present
+     */
     @Operation(
             summary = "Create advertisement",
             description = "Multipart request with JSON ('data') + images ('images')"
@@ -63,8 +95,23 @@ public class AdvertisementRestController {
         AdvertisementReadOnlyDTO advertisement = advertisementService.saveAdvertisement(advInsDTO, imageSet, request);
         return ResponseEntity.ok(advertisement);
     }
-
-@Operation(summary = "Update Advertisement")
+    /**
+     * Updates an existing advertisement.
+     *
+     * <p>
+     * The advertisement is identified by the UUID contained within the
+     * {@link AdvertisementUpdateDTO}.
+     * </p>
+     *
+     * @param advUpdateDTO update payload
+     * @param images optional new images to upload
+     * @param bindingResult validation results
+     * @param request HTTP request containing authentication token
+     * @return the updated advertisement
+     * @throws ValidationException if validation fails
+     * @throws ParseException if spatial data parsing fails
+     */
+    @Operation(summary = "Update Advertisement")
     @PostMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdvertisementReadOnlyDTO> updateAdvertisement(
             @RequestPart("data") AdvertisementUpdateDTO advUpdateDTO,
@@ -74,11 +121,14 @@ public class AdvertisementRestController {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
-
         AdvertisementReadOnlyDTO readOnlyDTO = advertisementService.updateAdvertisement(advUpdateDTO, images, request);
         return ResponseEntity.ok(readOnlyDTO);
     }
-
+    /**
+     * Retrieves all advertisements.
+     *
+     * @return a list of all advertisements
+     */
     @Operation(summary = "List all Advertisements")
     @GetMapping(path = "/all")
     public ResponseEntity<List<AdvertisementReadOnlyDTO>> getAllAdvertisements() {
@@ -86,7 +136,13 @@ public class AdvertisementRestController {
         System.out.println("Fetched " + ads.size() + " advertisements.");
         return ResponseEntity.ok(ads);
     }
-
+    /**
+     * Retrieves advertisements in paginated form.
+     *
+     * @param page page index (zero-based)
+     * @param size number of items per page
+     * @return paginated advertisements
+     */
     @Operation(summary = "List all Advertisements paginated")
     @GetMapping(path = "/paginated")
     public ResponseEntity<Paginated<AdvertisementReadOnlyDTO>> paginatedAdvertisements(
@@ -96,13 +152,28 @@ public class AdvertisementRestController {
         Paginated<AdvertisementReadOnlyDTO> advPage = advertisementService.getPaginatedAds(page, size);
         return ResponseEntity.ok(advPage);
     }
-
+    /**
+     * Deletes an advertisement by UUID.
+     *
+     * <p>
+     * Only the owner of the advertisement is authorized to perform this action.
+     * </p>
+     *
+     * @param uuid the advertisement UUID
+     */
     @Operation(summary = "Delete Advertisement by UUID")
     @DeleteMapping(path = "/delete/{uuid}")
     public void deleteAdvertisement(@PathVariable String uuid) {
         advertisementService.deleteAdvertisementByUUID(uuid);
     }
-
+    /**
+     * Serves an attachment file.
+     *
+     * @param filename the attachment filename
+     * @return the attachment as a downloadable resource
+     * @throws IOException if file access fails
+     */
+    @Operation(summary = "Returns attachment to download")
     @GetMapping("/attachments/{filename:.+}")
     public ResponseEntity<Resource> serveAttachment(@PathVariable String filename) throws IOException {
         Path file = Paths.get(uploadProperties.getDir()).resolve(filename);
@@ -112,7 +183,13 @@ public class AdvertisementRestController {
                 .header(HttpHeaders.CONTENT_TYPE, contentType == null ? "application/octet-stream" : contentType)
                 .body(resource);
     }
-
+    /**
+     * Retrieves all advertisements created by the authenticated user.
+     *
+     * @param request HTTP request containing authentication token
+     * @return list of user-owned advertisements
+     */
+    @Operation(summary = "Returns all advertisements from the same user.")
     @GetMapping("/user-ads")
     public List<AdvertisementReadOnlyDTO> getUserAds(HttpServletRequest request) {
         return advertisementService.getAdvertisementsByUser(request);

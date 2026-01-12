@@ -9,11 +9,33 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Adds JWT Authorization: Bearer <token> to Swagger UI.
- * Makes it globally available.
- * Security requirement will be added to all admin endpoints.
+ * OpenAPI / Swagger configuration.
+ *
+ * <p>This configuration class customizes the generated OpenAPI documentation
+ * and integrates JWT-based authentication into Swagger UI.</p>
+ * <h2>JWT integration in Swagger</h2>
+ * <p>
+ * The {@link io.swagger.v3.oas.annotations.security.SecurityScheme} annotation
+ * registers a security scheme named <b>"JWT"</b> that:
+ * </p>
+ * <ul>
+ *   <li>Uses HTTP Bearer authentication</li>
+ *   <li>Expects a JWT token</li>
+ *   <li>Reads the token from the {@code Authorization} HTTP header</li>
+ * </ul>
+ * <p>
+ * This token will then be automatically sent with all secured API requests.
+ * </p>
+ *
+ * <h2>Global availability</h2>
+ * <p>
+ * The security scheme is defined globally and can be referenced by controllers
+ * or operations using {@code @SecurityRequirement(name = "JWT")}.
+ * </p>
+ *
+ * @see io.swagger.v3.oas.annotations.security.SecurityScheme
+ * @see io.swagger.v3.oas.models.OpenAPI
  */
-
 @Configuration
 @SecurityScheme(
         name = "JWT",
@@ -24,6 +46,11 @@ import org.springframework.context.annotation.Configuration;
 )
 public class OpenApiConfig {
 
+    /**
+     * Creates and configures the {@link OpenAPI} bean used by Springdoc.
+     *
+     * <p>This bean defines general metadata for the API documentation</p>
+     */
     @Bean
     public OpenAPI cartApiDocs() {
         return new OpenAPI()
@@ -31,7 +58,7 @@ public class OpenApiConfig {
                         .title("Cart Advertisement API")
                         .version("1.0")
                         .description("""
-                                Vehicle marketplace backend API.  
+                                Vehicle marketplace backend API.
                                 Includes authentication, administration, user management, and advertisements.
                                 """)
                 );

@@ -1,21 +1,33 @@
 package com.market.cart.validation;
 
 import com.market.cart.entity.advertisement.AdvertisementInsertDTO;
-import com.market.cart.entity.user.UserRepository;
 import com.market.cart.exceptions.custom.CustomInvalidArgumentException;
-import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
+/**
+ * Validator component responsible for validating advertisement-related
+ * input data before persistence.
+ *
+ * <p>
+ * Performs defensive checks on advertisement insert DTOs and uploaded
+ * attachment files, ensuring domain and file constraints are respected.
+ * </p>
+ */
 @Component
 @RequiredArgsConstructor
 public class AdvertisementValidator {
 
-    private final UserRepository userRepository;
-
+    /**
+     * Validates an {@link AdvertisementInsertDTO}.
+     *
+     * <p>
+     * Ensures required DTOs are present and that business constraints are satisfied.
+     * </p>
+     */
     public void validateInsertDTO(AdvertisementInsertDTO advInsDTO) {
         if (advInsDTO == null) {
             throw new CustomInvalidArgumentException("AdvertisementInsertDTO cannot be null.", "advertisementValidator");
@@ -43,6 +55,21 @@ public class AdvertisementValidator {
         }
     }
 
+    /**
+     * Validates uploaded image attachments for an advertisement.
+     *
+     * <p>
+     * Ensures each file:
+     * <ul>
+     *   <li>Is a supported image type</li>
+     *   <li>Is not empty</li>
+     *   <li>Does not exceed the maximum size limit (10MB)</li>
+     * </ul>
+     * </p>
+     *
+     * @param images the set of uploaded image files
+     * @throws CustomInvalidArgumentException if any file is invalid
+     */
     public void validateAttachments(Set<MultipartFile> images) {
         if (images == null || images.isEmpty()) {
             return;
@@ -64,6 +91,12 @@ public class AdvertisementValidator {
         }
     }
 
+    /**
+     * Determines whether a file has a supported image extension.
+     *
+     * @param file the uploaded file
+     * @return {@code true} if the file is a supported image type
+     */
     private boolean isOfImageType(MultipartFile file) {
 
         if (file == null || file.isEmpty()) {

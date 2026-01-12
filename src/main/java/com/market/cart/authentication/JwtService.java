@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +30,12 @@ import java.util.function.Function;
  * </ul>
  *
  * <p>
- * Tokens are signed using HMAC SHA-256 with a Base64-encoded secret key.
+ * Also validates the existence of security secret key and if it is >32 characters long.
+ * If not, shutdowns the application with {@link IllegalStateException}.
  * </p>
  *
  * <p>
- * <strong>Security note:</strong> Token contents, secret keys, and signatures
- * are never logged.
+ * Tokens are signed using HMAC SHA-256 with a Base64-encoded secret key.
  * </p>
  */
 @Service
@@ -49,6 +50,29 @@ public class JwtService {
     /// app.security.jwt-expiration=10800000
     @Value("${app.security.jwt-expiration}")
     private long jwtExpiration;
+
+    /**
+     * This method validates the existence of secret security key.
+     * If the key is empty or < 32 characters long it throws an {@link IllegalStateException}
+     * shutting down the application.
+     */
+    @PostConstruct
+    public void validateSecretKey() {
+        String ANSI_RED = "\u001B[31m";
+        String ANSI_RESET = "\u001B[0m";
+
+        if (secretKey == null || secretKey.isBlank()) {
+            log.error(ANSI_RED + "CRITICAL: 'app.security.secret-key' is missing or empty.\n" + ANSI_RESET);
+            throw new IllegalStateException(ANSI_RED + "Application cannot start without a security secret key.\n" + ANSI_RESET);
+        }
+
+        if (secretKey.length() < 32) {
+        log.error(ANSI_RED + "\n\nCRITICAL: 'app.security.secret-key' is too short for secure signatures.\n" + ANSI_RESET);
+            throw new IllegalStateException(ANSI_RED + "Security key must be at least 32 characters long.\n" + ANSI_RESET);
+        }
+
+        log.info("Security secret key validated successfully.");
+    }
 
     /**
      * Generates a signed JWT for the given user.

@@ -1,8 +1,9 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.6'
+	id 'org.springframework.boot' version '4.0.1'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
+
 
 group = 'com.market'
 version = '0.0.1-SNAPSHOT'
@@ -20,6 +21,19 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
+
+// Javadocs configuration
+tasks.withType(Javadoc).configureEach {
+	options.encoding = 'UTF-8'
+	options.charSet = 'UTF-8'
+	options.author = true
+	options.version = true
+	options.links(
+			'https://docs.oracle.com/en/java/javase/17/docs/api/',
+			'https://docs.spring.io/spring-framework/docs/current/javadoc-api/'
+	)
+}
+
 
 repositories {
 	mavenCentral()
@@ -54,6 +68,7 @@ dependencies {
 	//Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+//	javadoc 'org.projectlombok:lombok'
 
 	//Spring Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'

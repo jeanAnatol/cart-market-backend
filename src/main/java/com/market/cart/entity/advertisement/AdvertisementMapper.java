@@ -8,7 +8,6 @@ import com.market.cart.entity.enginespec.EngineSpecMapper;
 import com.market.cart.entity.fueltype.FuelType;
 import com.market.cart.entity.location.Location;
 import com.market.cart.entity.location.LocationMapper;
-
 import com.market.cart.entity.make.Make;
 import com.market.cart.entity.model.Model;
 import com.market.cart.entity.user.User;
@@ -69,14 +68,7 @@ public class AdvertisementMapper {
         return advertisement;
     }
 
-
-
     public AdvertisementReadOnlyDTO toReadOnlyDTO(Advertisement advertisement) {
-
-//        Set<String> imageUrls = advertisement.getAttachments().stream()
-//                .map(att -> att.getUrl()
-//                        + att.getFilename())
-//                .collect(Collectors.toSet());
 
         Set<String> imageUrls = advertisement.getAttachments().stream()
                 .map(Attachment::getUrl).collect(Collectors.toSet());

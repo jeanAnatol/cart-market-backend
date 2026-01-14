@@ -22,4 +22,6 @@ public class UserReadOnlyDTO {
 
     private String role;
 
+    private String uuid;
+
 }

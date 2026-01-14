@@ -110,10 +110,9 @@ public class UserRestController {
     @Operation(summary = "Delete User by UUID")
     @DeleteMapping("/delete/{uuid}")
     public ResponseEntity<?> deleteUser(
-            @PathVariable String uuid) {
-        userService.deleteUser(uuid);
-        log.info("Deleted user with [UUID = {}]", uuid);
+            @PathVariable String uuid, Authentication authentication) {
 
+        userService.deleteUser(uuid, authentication);
         return ResponseEntity.ok("User with uuid: "+uuid+" removed successfully");
     }
     /**

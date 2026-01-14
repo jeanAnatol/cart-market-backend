@@ -7,8 +7,10 @@ import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
 import com.market.cart.exceptions.custom.CustomTargetNotFoundException;
 import com.market.cart.validation.UserValidator;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,6 +32,9 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserValidator userValidator;
     public final JwtService jwtService;
+
+    String ANSI_RED = "\u001B[31m";
+    String ANSI_RESET = "\u001B[0m";
 
     /**
      * Creates and persists a new user.
@@ -138,11 +143,31 @@ public class UserService {
 //        user.removeRole(role);
 //    }
 
-    public void deleteUser(String uuid) {
-        if (userRepository.findByUuid(uuid).isEmpty()) {
-            throw new CustomTargetNotFoundException("User not found with uuid: "+uuid, "userService");
+    @Transactional(rollbackOn = Exception.class)
+    public void deleteUser(String uuid, Authentication authentication) {
+
+        String username = authentication.getName();
+
+        User user1 = userRepository.findByUuid(uuid)
+                        .orElseThrow(() -> new CustomTargetNotFoundException("No User found with uuid: " + uuid, "userService - deleteUser"));
+
+        User user2 = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new CustomTargetNotFoundException("No User found with username: " + username, "userService - deleteUser"));
+
+        if (!user1.equals(user2)) {
+            log.warn(ANSI_RED + "User delete request aborted, data do not match" + ANSI_RESET);
+            throw new IllegalStateException("Username and uuid do not match");
         }
-        userRepository.deleteByUuid(uuid);
+
+        Long id= user1.getRole().getId();
+        Role role = roleRepository.findById(id)
+                        .orElseThrow(() -> new CustomTargetNotFoundException("No role found with id: " + id, "userService - deleteUser"));
+        role.removeUser(user1);
+        roleRepository.save(role);
+
+        userRepository.deleteByUuid(uuid)
+                .orElseThrow(() -> new CustomTargetNotFoundException("No user found with uuid: " + uuid, "userService - deleteUser"));
+        log.info("User deleted successfully with uuid: {}.", uuid);
     }
 
     /**
@@ -154,5 +179,4 @@ public class UserService {
         return roleRepository.findByName("USER").
                 orElseThrow(() -> new CustomTargetNotFoundException("No Role found with name: USER", "userService"));
     }
-
 }

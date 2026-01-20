@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -147,9 +148,11 @@ public class AdvertisementRestController {
     @GetMapping(path = "/paginated")
     public ResponseEntity<Paginated<AdvertisementReadOnlyDTO>> paginatedAdvertisements(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction
     ) {
-        Paginated<AdvertisementReadOnlyDTO> advPage = advertisementService.getPaginatedAds(page, size);
+        Paginated<AdvertisementReadOnlyDTO> advPage = advertisementService.getPaginatedAds(page, size, sort, direction);
         return ResponseEntity.ok(advPage);
     }
     /**

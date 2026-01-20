@@ -247,10 +247,15 @@ public class AdvertisementService {
     }
 
     /// Returns all Advertisements paginated.
-    public Paginated<AdvertisementReadOnlyDTO> getPaginatedAds(int page, int size) {
-        String defaultSort = "createdAt";
-        Pageable pageable = PageRequest.of(page, size, Sort.by(defaultSort).ascending());
-        var paginatedAds = advertisementRepository.findAll(pageable);
+    public Paginated<AdvertisementReadOnlyDTO> getPaginatedAds(
+            int page,
+            int size,
+            String sort,
+            Sort.Direction direction
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+        Page<Advertisement> paginatedAds = advertisementRepository.findAll(pageable);
+
         return Paginated.onPage(paginatedAds.map((advertisementMapper::toReadOnlyDTO)));
     }
 

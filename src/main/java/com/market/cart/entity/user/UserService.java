@@ -1,6 +1,9 @@
 package com.market.cart.entity.user;
 
 import com.market.cart.authentication.JwtService;
+import com.market.cart.entity.advertisement.Advertisement;
+import com.market.cart.entity.attachment.Attachment;
+import com.market.cart.entity.attachment.AttachmentService;
 import com.market.cart.entity.role.Role;
 import com.market.cart.entity.role.RoleRepository;
 import com.market.cart.exceptions.custom.CustomTargetAlreadyExistsException;
@@ -12,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Service responsible for user management operations.
@@ -31,7 +38,8 @@ public class UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final UserValidator userValidator;
-    public final JwtService jwtService;
+    private final JwtService jwtService;
+    private final AttachmentService attachmentService;
 
     String ANSI_RED = "\u001B[31m";
     String ANSI_RESET = "\u001B[0m";
@@ -164,6 +172,28 @@ public class UserService {
                         .orElseThrow(() -> new CustomTargetNotFoundException("No role found with id: " + id, "userService - deleteUser"));
         role.removeUser(user1);
         roleRepository.save(role);
+
+
+        Set<String> adFilenames = new HashSet<>();
+
+        if (!user1.getAdvertisements().isEmpty()) {
+            for (Advertisement ad : user1.getAdvertisements()) {
+                if (!ad.getAttachments().isEmpty()) {
+                    for (Attachment at : ad.getAttachments()) {
+                        adFilenames.add(at.getFilename());
+                    }
+                    for (String filename : adFilenames) {
+                        attachmentService.deleteFile(filename);
+                        log.info("Attachment `{}` deleted.", filename);
+                    }
+                }
+            }
+        }
+
+        user1.getAdvertisements().stream()
+                .flatMap(ad -> ad.getAttachments().stream())
+                .map(Attachment::getUrl)
+                .forEach(attachmentService::deleteFile);
 
         userRepository.deleteByUuid(uuid)
                 .orElseThrow(() -> new CustomTargetNotFoundException("No user found with uuid: " + uuid, "userService - deleteUser"));

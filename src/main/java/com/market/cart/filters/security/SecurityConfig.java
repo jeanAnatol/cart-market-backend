@@ -78,7 +78,8 @@ public class SecurityConfig {
                                 "/v2/api-docs"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/advertisements/all"
+                                "/api/advertisements/all",
+                                "/api/advertisements/paginated"
                         ).permitAll()
                         .requestMatchers("/api/users/new").permitAll()
                         .requestMatchers("/api/reference/**").permitAll()
